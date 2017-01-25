@@ -43,7 +43,7 @@
     var stageCenter = stage.width() / 2;
 
     var layer = new Konva.Layer();
-    var iconLayer = new Konva.Layer();
+    //var iconLayer = new Konva.Layer();
   //  stage.add(layer);
 
     var tempLayer = new Konva.Layer();
@@ -58,6 +58,7 @@
     var yoff = 0;
     var dropCircle;
     var opacity;
+    var eggMap = [];
     for (var i = 0; i < 18; i++) {
         var x;
         var y;
@@ -96,6 +97,7 @@
         });
 
         layer.add(dropCircle);
+        eggMap[i] = {egg: dropCircle, chromos: []};
     }
 
     // setup chromosome container
@@ -263,8 +265,8 @@
       }
     });
 
-    var placeInEgg = function(precursor) {
-        currentDragee.inEgg = precursor;
+    var placeInEgg = function(egg) {
+        currentDragee.inEgg = egg;
 
         var w = currentDragee.getWidth();
         var h = currentDragee.getHeight();
@@ -278,10 +280,22 @@
 
         currentDragee.setWidth(w);
         currentDragee.setHeight(h);
+
+        eggMap[egg.index - 1].chromos.push(currentDragee);
+
+        if(eggMap[egg.index]) {
+            eggMap[egg.index].egg.setOpacity(1.0);
+        }
+
+        console.log(eggMap);
+    }
+
+    var eggIsEmpty = function(egg) {
+        // finish
     }
 
     var returnToContainer = function(icon) {
-      icon.inEgg = null;
+
 
       if(icon.getWidth() < iconWidth) {
           icon.setWidth(iconWidth);
@@ -300,7 +314,21 @@
 
       layer.draw();
       tempLayer.draw();
+
+      eggMap[icon.inEgg.index-1].chromos.remove(currentDragee);
+
+      console.log(eggMap);
+      
+      icon.inEgg = null;
     }
+
+    Array.prototype.remove = function (v) {
+      if (this.indexOf(v) != -1) {
+          this.splice(this.indexOf(v), 1);
+          return true;
+      }
+    return false;
+}
 </script>
 
 </body>
