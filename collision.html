@@ -10,7 +10,9 @@
             padding: 0;
             overflow: hidden;
             background-color: #F0F0F0;
-            width: 540px;
+            min-width: 845px;
+            min-height: 845px;
+            width: 845px;
             height: 845px;
         }
     </style>
@@ -18,21 +20,199 @@
 <body>
 <div id="container"></div>
 <script>
+Array.prototype.remove = function (v) {
+  if (this.indexOf(v) != -1) {
+      this.splice(this.indexOf(v), 1);
+      return true;
+  }
+return false;
+}
+
+// icon settings
+Konva.Image.prototype.setHomePos = function(params) {
+        this.iconPos = params;
+};
+
+Konva.Image.prototype.getHomePos = function() {
+        return this.iconPos;
+};
+
+// egg settings
+Konva.Circle.prototype.initEgg = function(params) {
+        this.chromos = params.chromos;
+        this.next = params.next;
+        this.prev = params.prev;
+};
+
+Konva.Circle.prototype.isPrecursor = false;
+
+var setEggLabel = function(i) {
+  if(! textEggLabels[i] || textEggLabels[i].text.length == 0) return false;
+
+  var text = new Konva.Text({
+      fill : 'black',
+      x: x + textEggLabels[i].x,
+      y: y + textEggLabels[i].y,
+      fontSize: '14'
+  });
+
+  text.text(textEggLabels[i].text);
+
+  layer.add(text);
+
+  debugRect(x + textEggLabels[i].x, y + textEggLabels[i].y, text.getWidth(), text.getHeight())
+};
+
+var debugRect = function(x, y, w, h) {
+    if(! debug) return false;
+
+    var rect = new Konva.Rect({
+        stroke: 'black',
+        x: x - 5,
+        y: y - 5,
+        width: w + 10,
+        height: h + 10
+    });
+
+    layer.add(rect);
+};
+
+var placeInEgg = function(egg, sizeChangeOnDrop = 1.2) {
+
+    var w = currentDragee.getWidth();
+    var h = currentDragee.getHeight();
+
+    if(sizeChangeOnDrop) {
+        if(w > iconWidth) {
+            w = iconWidth;
+        }
+
+        if(h > iconHeight) {
+            h = iconHeight;
+        }
+
+        w = w * sizeChangeOnDrop;
+        h = h * sizeChangeOnDrop;
+    }
+
+    currentDragee.setWidth(w);
+    currentDragee.setHeight(h);
+
+    var prevEgg = egg.prev;
+
+    console.log(prevEgg);
+
+    if(prevEgg /*&& ! prevEgg.isPrecursor*/) {
+        if(prevEgg.chromos.length > 0 || prevEgg.isPrecursor) {
+              prevEgg.opacity(0.4);
+              egg.chromos.push(currentDragee);
+              currentDragee.inEgg = egg;
+
+              if(egg.next) {
+                  egg.next.opacity(1.0);
+              }
+        } else if(! prevEgg.isPrecursor) {
+              if(currentDragee.inEgg) {
+                  eggMap[currentDragee.inEgg.name()].chromos.remove(currentDragee);
+                  currentDragee.inEgg.opacity(0.4);
+              }
+
+              currentDragee.setX(prevEgg.x() - circleDiameter / 2);
+              currentDragee.setY(prevEgg.y() - circleDiameter / 2);
+
+              prevEgg.opacity(1.0);
+
+              if(prevEgg.next) {
+                  prevEgg.next.opacity(1.0);
+                  prevEgg.next.fill(circleFillColor);
+              }
+
+              placeInEgg(prevEgg);
+        }
+    } else {
+          if(egg.next) {
+              egg.next.opacity(1.0);
+          }
+    }
+
+    egg.moveToBottom();
+}
+
+var returnToContainer = function(icon, scaled = 1.0) {
+  if(icon.getWidth() !== iconWidth) {
+      icon.setWidth(iconWidth * scaled);
+  }
+
+  if(icon.getHeight() !== iconHeight) {
+      icon.setHeight(iconHeight * scaled);
+  }
+
+  icon.moveTo(layer);
+
+  var index = Number(icon.name().split('_')[1]);
+
+  icon.setX(icon.getHomePos().x);
+  icon.setY(icon.getHomePos().y);
+
+  layer.draw();
+  tempLayer.draw();
+
+  if(icon.inEgg) {
+    icon.inEgg.chromos.remove(currentDragee);
+
+        if(icon.inEgg.chromos.length == 0) {
+                icon.inEgg.fill(circleFillColor);
+                if(icon.inEgg.next) {
+                      icon.inEgg.next.opacity(0.4);
+                }
+                if(icon.inEgg.prev) {
+                      icon.inEgg.prev.opacity(1.0);
+                }
+                layer.draw();
+        }
+  }
+
+//  console.log(eggMap);
+
+  icon.inEgg = null;
+}
+
+</script>
+<script>
+    var debug = false;
+
     var width = window.innerWidth;
     var height = window.innerHeight;
-    var circleDiameter = 70;
-    var circleSpace = 80;
-    var circleFillColor = 'rgba(254,255,173,0.8)';
-    var circleDropColor = 'rgba(227,140,70, 0.8)';
-    var circleHoverColor = 'rgba(174,197,217, 0.8)';
+    var circleDiameter = 140;
+    var circleSpace = 160;
+    var circleFillColor = 'rgb(235,235,235)'//'rgba(254,255,173,0.8)';
+    var circleDropColor = '#DAD7C5';
+    var circleHoverColor = 'green';
     var circleStrokeColor = 'black';
     var problemPosFormula = 'stage.width() - (circleDiameter * 2)';
-    var cctXPos = 'circleDiameter';
-    var cctYPos = 'circleDiameter';
+    var cctXPos = 'iconWidth / 4';
+    var cctYPos = 'iconWidth / 4';
     var containerFill = 'rgba(197,197,197,0.8)';
     var containerStroke = 'black';
-    var iconWidth = 35;
-    var iconHeight = 30;
+    var iconWidth = 125;
+    var iconHeight = 125;
+    var iconHomeScale = 0.75;
+    var iconHSpacing = 'iconWidth * 0.6';
+    var iconVSpacing = 'iconHeight * 0.8';
+    var iconsPerRow = 2;
+    var rightLabelOffset = - 65;
+
+    var textEggLabels = [ {x: -67, y: (circleSpace / 2), text: 'Precursor Germ cells'},
+                          {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase I\n  (2n = 4)'},
+                          {x: circleSpace + rightLabelOffset, y: 0, text: 'Metaphase I'},
+                          {x: circleSpace + rightLabelOffset, y: 0, text: 'Anaphase I'},
+                          {x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase I'},
+                          {x: circleSpace + rightLabelOffset, y: 0, text: ''},
+                          {x: circleSpace + rightLabelOffset, y: -30, text: 'Cytokinesis\n (n = 2)'}
+                        ]
+
+    var imageSources = {precursor: '/img/Precursor-Germ-Cell.png',
+                        icons: [ '/img/Prophase-1.png','/img/X-version-Prophase-1.png', '/img/X-version-Precursor-Germ-Cell.png']};
 
     var stage = new Konva.Stage({
         container: 'container',
@@ -43,8 +223,6 @@
     var stageCenter = stage.width() / 2;
 
     var layer = new Konva.Layer();
-    //var iconLayer = new Konva.Layer();
-  //  stage.add(layer);
 
     var tempLayer = new Konva.Layer();
     stage.add(tempLayer);
@@ -52,60 +230,15 @@
     var text = new Konva.Text({
         fill : 'black'
     });
+
     layer.add(text);
-
-    // setup egg interface
-    var yoff = 0;
-    var dropCircle;
-    var opacity;
-    var eggMap = [];
-    for (var i = 0; i < 18; i++) {
-        var x;
-        var y;
-
-        if(i < 4) {
-           x = eval(problemPosFormula) - (circleDiameter / 2);
-           y = circleDiameter + yoff;
-           yoff += circleSpace;
-        } else if(i < 14 && i % 2 == 1) {
-           x = eval(problemPosFormula)  - circleDiameter * 1.5;
-        } else if(i < 14 && i % 2 == 0) {
-          x = eval(problemPosFormula) + circleDiameter / 2;
-          y = circleDiameter + yoff;
-          yoff += circleSpace;
-        } else if(i == 14) {
-          x = eval(problemPosFormula) - circleDiameter * 2.5;
-          y = circleDiameter + yoff;
-        } else if(i == 15) {
-          x = eval(problemPosFormula)  - circleDiameter * 1.2;
-        } else if(i == 16) {
-          x = eval(problemPosFormula);
-        } else if(i == 17) {
-          x = eval(problemPosFormula) + circleDiameter * 1.3;
-        }
-
-        opacity = i > 0 ? 0.4 : 1.0;
-
-        dropCircle = new Konva.Circle({
-            x : x,
-            y : y,
-            fill : circleFillColor,
-            radius: (circleDiameter / 2),
-            stroke: circleStrokeColor,
-            name : 'egg ' + i,
-            opacity: opacity
-        });
-
-        layer.add(dropCircle);
-        eggMap[i] = {egg: dropCircle, chromos: []};
-    }
 
     // setup chromosome container
     var chromosomeContainer = new Konva.Rect({
           x: eval(cctXPos),
           y: eval(cctYPos),
-          width: 190,
-          height: 500,
+          width: 150,
+          height: 300,
           fill: containerFill,
           stroke: containerStroke,
           strokeWidth: 1,
@@ -115,32 +248,159 @@
 
     layer.add(chromosomeContainer);
 
-    var chromos = new Image(), icon, iconPos = [];
-    var xchromPos = eval(cctXPos) + 15;
-    var ychromPos = eval(cctYPos) + 15;
+    var imgList = [], iconPos = [];
+    var xchromPos = eval(cctXPos) - (eval(iconHSpacing) * 0.075);
+    var ychromPos = eval(cctYPos);// + (eval(iconVSpacing) * 0.015);
+    var vSpace = eval(iconVSpacing);
+    var hSpace = eval(cctXPos) - (eval(iconHSpacing) * 0.075);
 
-      chromos.onload = function() {
-          for(var i = 0; i < 4; i++) {
-            icon = new Konva.Image({
-                  x: xchromPos,
-                  y: ychromPos,
-                  image: chromos,
-                  width: iconWidth,
-                  height: iconHeight,
-                  name: 'precursor_'+i,
-                  draggable: true,
-                  fill: 'transparent'
-            });
+    imageSources.icons.forEach(function(src, inx) {
+      console.log(']]]]] '+ychromPos);
+      imgList[inx] = new Image();
+
+      var icon = new Konva.Image({
+            x: xchromPos,
+            y: ychromPos,
+            image: imgList[inx],
+            width: iconWidth * iconHomeScale,
+            height: iconHeight * iconHomeScale,
+            name: 'chromosome_'+inx,
+            draggable: true,
+            fill: 'transparent'
+      });
+
+      icon.setHomePos({x: xchromPos, y: ychromPos});
+
+      imgList[inx].onload = function() {
+          console.log('>>>>> '+ychromPos);
 
             layer.add(icon);
             stage.add(layer);
 
-            iconPos[i] = {x: xchromPos, y: ychromPos};
-            xchromPos += 22;
-          }
-        };
+            icon.moveToTop();
 
-    chromos.src = '/img/x-35.png';
+      };
+
+      xchromPos += eval(iconHSpacing);
+      //console.log((inx + 1) + ' == ' + iconsPerRow + '| % == zero --> ' + ((inx + 1) % iconsPerRow));
+
+      ychromPos += ((inx + 1) % iconsPerRow) == 0 ? vSpace : 0;
+      xchromPos = ((inx + 1) % iconsPerRow) === 0 ? hSpace : xchromPos;
+
+      console.log(ychromPos);
+    });
+
+    console.log(layer);
+        // setup egg interface
+        var yoff = 0;
+        //var egg;
+        var opacity;
+        var eggMap = [];
+        var precursorImg = new Image();
+        var precursor;
+        var previousEgg;
+
+        for (var i = 0; i < 7; i++) {
+            var x;
+            var y;
+
+            if(i == 0) {
+                  x = eval(problemPosFormula) - (circleDiameter * 2);
+                  y = circleDiameter;
+
+                  var pX = x; // create local instance
+                  var pY = y;
+
+                  precursorImg.onload = function() {
+                        precursor = new Konva.Image({
+                              x: pX - (circleDiameter / 2),
+                              y: pY - (circleDiameter / 2),
+                              image: precursorImg,
+                              width: iconWidth,
+                              height: iconHeight,
+                              name: 'precursor_'+i,
+                              fill: 'transparent'
+                        });
+
+                        layer.add(precursor);
+                        stage.add(layer);
+                  };
+
+            } else if(i < 5) {
+               x = eval(problemPosFormula) - (circleDiameter / 2);
+               y = circleDiameter + yoff;
+               yoff += circleSpace;
+            } else if(i < 7 && i % 2 == 1) {
+                x = eval(problemPosFormula)  - circleDiameter * 1.5;
+                y = circleDiameter + yoff;
+                //yoff += circleSpace;
+            } else if(i < 7 && i % 2 == 0) {
+              x = eval(problemPosFormula) + circleDiameter / 2;
+
+            //  yoff += circleSpace;
+            }  else if(i == 7) {
+              x = eval(problemPosFormula) - circleDiameter * 2.5;
+              y = circleDiameter + yoff;
+            }
+
+            setEggLabel(i);
+            /*
+            else if(i < 16 && i % 2 == 1) {
+               x = eval(problemPosFormula)  - circleDiameter * 1.5;
+            } else if(i < 16 && i % 2 == 0) {
+              x = eval(problemPosFormula) + circleDiameter / 2;
+              y = circleDiameter + yoff;
+              yoff += circleSpace;
+            } else if(i == 16) {
+              x = eval(problemPosFormula) - circleDiameter * 2.5;
+              y = circleDiameter + yoff;
+            } else if(i == 17) {
+              x = eval(problemPosFormula)  - circleDiameter * 1.2;
+            } else if(i == 18) {
+              x = eval(problemPosFormula);
+            } else if(i == 19) {
+              x = eval(problemPosFormula) + circleDiameter * 1.3;
+            } */
+
+            opacity = i > 1 ? 0.4 : 1.0;
+
+            var egg = new Konva.Circle({
+                x : x,
+                y : y,
+                fill : circleFillColor,
+                radius: (circleDiameter / 2),
+                stroke: circleStrokeColor,
+                name : 'egg_' + i,
+                opacity: opacity,
+                fill: i === 0 ? circleDropColor : 'transparent',
+            });
+
+            egg.isPrecursor = i === 0;
+
+            layer.add(egg);
+            stage.add(layer);
+
+          //  var prev = eggMap['egg_'+(i-1)] ? eggMap['egg_'+(i-1)] : null;
+            egg.initEgg({next: null, prev:  previousEgg, chromos: []});
+
+            if(previousEgg && egg) {
+              previousEgg.next = egg;
+            }
+
+            previousEgg = egg;
+
+            egg.moveToBottom();
+
+            delete(egg);
+        }
+
+    console.log(layer);
+
+    imgList.forEach(function(img, inx) {
+        img.src = imageSources.icons[inx];
+    });
+
+    precursorImg.src = imageSources.precursor;
 
     layer.draw();
     var currentDragee;
@@ -155,6 +415,8 @@
     stage.on("dragmove", function(evt){
         var pos = stage.getPointerPosition();
         var shape = layer.getIntersection(pos);
+        //shape.moveToBottom();
+        evt.target.moveToTop();
         if (previousShape && shape) {
             if (previousShape !== shape) {
                 // leave from old targer
@@ -217,7 +479,7 @@
       }
     }
 
-      returnToContainer(e.target);
+      returnToContainer(e.target, iconHomeScale);
     });
 
     stage.on("dragenter", function(e){
@@ -244,6 +506,7 @@
       if(e.target.opacity !== 1.0) return false;
 
       if(e.target instanceof Konva.Circle) {
+            e.target.fill(circleHoverColor);
         text.text('dragover ' + e.target.name());
         layer.draw();
       }
@@ -252,83 +515,19 @@
     stage.on("drop", function(e){
 
       if(e.target.opacity() !== 1.0) {
-          returnToContainer(currentDragee);
+          returnToContainer(currentDragee, iconHomeScale);
           return;
       }
 
       if(e.target instanceof Konva.Circle) {
             e.target.fill(circleDropColor);
-            text.text('drop ' + e.target.name());
+            text.text('drop ' + e.target.name()+" x: "+e.target.x()+" y: "+e.target.y());
             layer.draw();
 
             placeInEgg(e.target);
       }
     });
 
-    var placeInEgg = function(egg) {
-        currentDragee.inEgg = egg;
-
-        var w = currentDragee.getWidth();
-        var h = currentDragee.getHeight();
-
-        if(w === iconWidth) {
-           w = w / 2;
-        }
-        if(h === iconHeight) {
-           h = h / 2;
-        }
-
-        currentDragee.setWidth(w);
-        currentDragee.setHeight(h);
-
-        eggMap[egg.index - 1].chromos.push(currentDragee);
-
-        if(eggMap[egg.index]) {
-            eggMap[egg.index].egg.setOpacity(1.0);
-        }
-
-        console.log(eggMap);
-    }
-
-    var eggIsEmpty = function(egg) {
-        // finish
-    }
-
-    var returnToContainer = function(icon) {
-
-
-      if(icon.getWidth() < iconWidth) {
-          icon.setWidth(iconWidth);
-      }
-
-      if(icon.getHeight() < iconHeight) {
-          icon.setHeight(iconHeight);
-      }
-
-      icon.moveTo(layer);
-
-      var index = Number(icon.name().split('_')[1]);
-
-      icon.setX(iconPos[index].x);
-      icon.setY(iconPos[index].y);
-
-      layer.draw();
-      tempLayer.draw();
-
-      eggMap[icon.inEgg.index-1].chromos.remove(currentDragee);
-
-      console.log(eggMap);
-      
-      icon.inEgg = null;
-    }
-
-    Array.prototype.remove = function (v) {
-      if (this.indexOf(v) != -1) {
-          this.splice(this.indexOf(v), 1);
-          return true;
-      }
-    return false;
-}
 </script>
 
 </body>
