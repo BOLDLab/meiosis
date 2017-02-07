@@ -1,0 +1,31 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #F0F0F0;
+    min-width: 645px;
+    min-height: 645px;
+    width: 605px;
+    height: 605px;
+}
+
+#desc {
+  position : absolute;
+  top: 5px;
+  left: 5px;
+}
+iframe#konva_portal {
+  max-width: 605px;
+  max-height: 605px;
+  width: 605px;
+  height: 605px;
+  border: thick solid 'red';
+}
+#container {
+  max-width: 600px;
+  max-height: 645px;
+  width: 645px;
+  height: 620px;
+  border: thin solid #ddd;
+  overflow: hidden;
+}
