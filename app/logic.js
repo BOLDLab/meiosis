@@ -1,3 +1,4 @@
+var $ = require('jquery-slim');
 require('konva');
 
 var app = { run: function() {
@@ -25,8 +26,8 @@ var problemPosFormula = 'stage.width() - (circleDiameter * 5)';
 var cctXPos = 'iconWidth / 4';
 var cctYPos = 'iconWidth * 1.2';
 
-var iconWidth = 115;
-var iconHeight = 115;
+var iconWidth = 140;
+var iconHeight = 140;
 var iconHomeScale = 0.8;
 var iconHSpacing = 'iconWidth * 0.6';
 var iconVSpacing = 'iconHeight * 0.8';
@@ -34,10 +35,11 @@ var iconsPerRow = 3;
 
 var containerFill = circleHoverColor;//'rgb(201,200,184)';
 var containerStroke = 'black';
-var containerHeight = 200;
-var containerWidth = (iconWidth * iconsPerRow) * iconHomeScale;//- (iconWidth * 0.25);
+var containerHeight = 400;
+var containerWidth = (iconWidth * iconsPerRow) * (iconHomeScale - 0.17);//- (iconWidth * 0.25);
 
 var rightLabelOffset = - (circleSpace / 2);
+var leftLabelOffset = -(circleSpace);
 var scrollDistance = 5;
 var urlBase = '';//'/test/meiosis/'
 
@@ -46,24 +48,24 @@ var focusPositionX = 460;
 var focusPositionY = 255;
 
 var textEggLabels = [ {x: -67, y: (circleSpace / 2), text: 'Precursor Germ cells'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase I\n  (2n = 4)'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase I'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Metaphase I'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Anaphase I'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase I'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: ''},
-                      {x: circleSpace + rightLabelOffset, y: -30, text: 'Cytokinesis\n (n = 2)'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: ''},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase II\n  (n = 2)'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: ''},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase II'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase II'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Metaphase II'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: ''},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Metaphase II'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Anaphase II'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: ''},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Anaphase II'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase II'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: ''},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: ''},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: ''},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis\n (n = 2)'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase II'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
                     ]
 
 var imageSources = {
@@ -131,12 +133,15 @@ var focusLayer = new Konva.Layer({name: 'focusLayer'});
 
 var undoHistory = [];
 
+var DOMLabelWidth = 0; // set with jquery
+var DOMLabelHeight = 0;
+
 var debug = false;
 
 var ui = {
 
 setEggLabel: function(i, egg, x, y) {
-  if(! textEggLabels[i] || textEggLabels[i].text.length == 0) return false;
+  if(! textEggLabels[i]) return false;
 
   var text = new Konva.Text({
       fill : 'black',
@@ -173,6 +178,17 @@ undo: function() {
                 egg.fill(circleFillColor);
                 egg.opacity(1.0);
 
+                var str = egg.label.text();
+                var dipi = str.indexOf("\n(Diploid)");
+                var hapi = str.indexOf("\n(Haploid)");
+
+                var pos = dipi || hapi;
+
+                if(pos > 0) {
+                  str = str.substr(0, pos);
+                  egg.label.setText(str);
+                }
+
                 if(egg.prev && !egg.prev.isPrecursor) {
                     egg.prev.opacity(1.0);
                     ui.toggleAllIconsDraggable(egg.prev, true);
@@ -182,7 +198,7 @@ undo: function() {
                     ui.toggleAllIconsDraggable(egg.next, false);
                 }
 
-                layer.draw();
+                layer.batchDraw();
 
                 ui.focus(egg.next, { focusOut: true,
                                 onComplete: function() {
@@ -287,14 +303,13 @@ toggleAllIconsDraggable: function(egg, draggable) {
   });
 },
 
-placeInEgg: function(egg, sizeChangeOnDrop) {
-    sizeChangeOnDrop = sizeChangeOnDrop || 1.2;
+placeInEgg: function(egg, pointerPos, sizeChangeOnDrop) {
+
+
+    sizeChangeOnDrop = sizeChangeOnDrop || 1;
 
     var w = app.currentDragObject.getWidth();
     var h = app.currentDragObject.getHeight();
-
-//    app.currentDragObject.setFill('#F00');
-//    console.log(app.currentDragObject.parent.attrs.name);
 
     if(sizeChangeOnDrop) {
         if(w > iconWidth) {
@@ -329,76 +344,38 @@ placeInEgg: function(egg, sizeChangeOnDrop) {
               if(ui.allIconsPlaced()) {
                   ui.toggleAllIconsDraggable(egg, true);
               }
-              //egg.group.add(app.currentDragObject);
-            //  app.currentDragObject.remove();
-          //    app.currentDragObject.moveTo(egg.group);
-            //  app.currentDragObject.moveToTop();
-          //    focusLayer.draw();
-          //    layer.draw();
-            //  staticLayer.draw();
 
               egg.chromos.push(app.currentDragObject);
               app.currentDragObject.inEgg = egg;
 
               if(! egg.isPrecursor) undoHistory.push(egg);
 
-            //  if(! allIconsPlaced()) { app.currentDragObject.setPlaced(true); }
               app.currentDragObject.setPlaced(true);
 
-            //  if(egg.next) {
-                  //    egg.next.opacity(1.0);
-                      /*ui.focus(egg,  { focusOut: true,
-                                      onComplete: function() {
-                                            ui.focus(egg.next);
-                                      }
-                                    });*/
-          //    }
         }
       }
-    /*    if(! prevEgg.isPrecursor && prevEgg.chromos.length === 0) {
-              if(app.currentDragObject.inEgg) {
-                  app.currentDragObject.inEgg.chromos.remove(app.currentDragObject);
-                  app.currentDragObject.inEgg.opacity(0.4);
-              }
-              //prevEgg.group.add(app.currentDragObject);
-            //  app.currentDragObject.moveTo(prevEgg.group);
-              app.currentDragObject.setX(prevEgg.group.x() - circleDiameter / 2);
-              app.currentDragObject.setY(prevEgg.group.y() - circleDiameter / 2);
-
-              prevEgg.opacity(1.0);
-
-              if(prevEgg.next) {
-                  prevEgg.next.opacity(1.0);
-                  prevEgg.next.fill(circleFillColor);
-              }
-
-              ui.placeInEgg(prevEgg);
-        }
-    } else {
-          if(egg.next) {
-              egg.next.opacity(1.0);
-              ui.focus(egg,  { focusOut: true,
-                              onComplete: function() {
-                                    ui.focus(egg.next);
-                              }
-                            });
-          }
-    }*/
-
-  //  ui.checkForEmptyEgg(egg);
 
     if(egg.next) {
-      //egg.moveTo(tempLayer);
-      egg.moveToBottom();
 
-        ui.updateIcons(egg.next.sequence);
-        ui.focus(egg, {focusOut: true,
-                          onComplete: function() {
-                            ui.focus(egg.next, {focusOut: false});
-                            egg.next.moveToTop();
-                          }});
+        $(egg).trigger('beforeEggTween', { callback: function() {
+          focusLayer.hide();
+          ui.updateIcons(egg.next.sequence);
+          egg.moveToBottom();
+          ui.focus(egg, {focusOut: true,
+                            onComplete: function() {
+                                  focusLayer.show();
+                              ui.focus(egg.next,
+                                {focusOut: false,
+                                onComplete: function() {
 
+                                }});
+                              egg.next.moveToTop();
+                            }});
+        }
+      });
     }
+  //  app.currentDragObject.setX(pointerPos.x + (app.currentDragObject.getWidth/2));
+  //  app.currentDragObject.setY(pointerPos.y + (app.currentDragObject.getHeight/2));
 
     return true;
 },
@@ -641,8 +618,11 @@ focus: function(thisEgg, params) {
           if(app.safeLabel) {
               app.safeLabel.moveTo(thisEgg.group);
           }
+            iconMenu.setListening(true);
+            resetButton.setListening(true);
+            undoButton.setListening(true);
+          //  app.tweenIsPlaying = false;
 
-          layer.draw();
           delete(app.eggTween);
           delete(app.safeLabel);
           delete(app.groupTween);
@@ -651,10 +631,13 @@ focus: function(thisEgg, params) {
 
   app.playEggTween = function() {
         if(app.eggTween) {
+
           app.eggTween.play();
+
         }
 
         ui.focusing = false;
+
   }
 /*  app.iconTweens = {};
   thisEgg.group.children.forEach(function(node) {
@@ -684,7 +667,12 @@ focus: function(thisEgg, params) {
   });
     }
 
-//  console.log("Tweening "+thisEgg.group.name());
+  app.groupTween = app.groupTween || new Array();
+
+  if(typeof app.groupTween.destroy === 'function') {
+      app.groupTween.destroy();
+  }
+
   app.groupTween = new Konva.Tween({
     node: thisEgg.group,
     duration: 0.6,
@@ -695,28 +683,28 @@ focus: function(thisEgg, params) {
     scaleX: params.focusOut ? 1 : circleFocusMultiplier,
     scaleY: params.focusOut ? 1 : circleFocusMultiplier,
     onFinish: function() {
-        layer.draw();
-        tempLayer.draw();
-        staticLayer.draw();
-        tempLayer.draw();
+        thisEgg.cache();
+
         app.textTween.play();
         if(params.onComplete) {
-
               params.onComplete();
         }
-        ui.focusing = true;
 
+      //  app.tweenIsPlaying = false;
+        ui.focusing = true;
     }
   });
 
-  // start tween after 2 seconds
-  app.thread = setTimeout(function() {
-      app.groupTween.play();
+    app.thread = setTimeout(function() {
+        iconMenu.setListening(false);
+        resetButton.setListening(false);
+        undoButton.setListening(false);
+      //  app.tweenIsPlaying = true;
+        app.groupTween.play();
 
-      //clearTimeout(app.thread);
-  }, 50);
+    }, 50);
 
-  focusedEgg = thisEgg;
+    focusedEgg = thisEgg;
 
   return this;
 },
@@ -783,6 +771,7 @@ Konva.Circle.prototype.initEgg = function(params) {
         this.next = params.next;
         this.prev = params.prev;
         var egg = this;
+
         this.group = new Konva.Group({
               x: params.x,
               y: params.y,
@@ -796,6 +785,10 @@ Konva.Circle.prototype.initEgg = function(params) {
           layer.add(this.group);
         }
         this.group.add(egg);
+
+        $(this).on("beforeEggTween", function(e, o){
+            $(stage).trigger('touchEgg', { egg: e.target, callback: o.callback });
+        });
 
         return this.group;
 };
@@ -859,9 +852,9 @@ iconMenu.uiContainer({
       y: eval(cctYPos)
 });
 
-var undoIcon = new Konva.Rect({
+var undoButton = new Konva.Rect({
   x: containerWidth / 6,
-  y: circleDiameter + 50,
+  y: containerHeight - iconHeight / 2,
   width: iconWidth / 2,
   height: iconHeight / 3,
   fill: containerFill,
@@ -873,7 +866,7 @@ var undoIcon = new Konva.Rect({
 
 var undoText = new Konva.Text({
   x: containerWidth / 6 + iconWidth * 0.1,
-  y: circleDiameter + 54,
+  y: containerHeight - (iconHeight / 2) + 15,
     fill : 'black',
     text: 'Undo',
     fontSize: 18,
@@ -881,40 +874,41 @@ var undoText = new Konva.Text({
      fill: buttonLabelColor
 });
 
-var resetIcon = new Konva.Rect({
+var resetButton = new Konva.Rect({
   x: containerWidth / 6 + iconWidth * 0.6,
-  y: circleDiameter + 50,
+  y: containerHeight - iconHeight / 2,
   width: iconWidth / 2,
   height: iconHeight / 3,
   fill: containerFill,
   stroke: containerStroke,
   strokeWidth: 2,
   name: 'reset',
-  opacity: 0.4,
+  opacity: 1,
 });
 
-resetIcon.setUIComponentType('button');
-undoIcon.setUIComponentType('button');
+resetButton.setUIComponentType('button');
+undoButton.setUIComponentType('button');
 
 var resetText = new Konva.Text({
     x: containerWidth / 6 + iconWidth * 0.7,
-  y: circleDiameter + 54,
+    y: containerHeight - (iconHeight / 2) + 15,
     fill : 'black',
     text: 'Reset',
     fontSize: 18,
      fontFamily: 'Calibri',
      fill: buttonLabelColor,
-     opacity: 0.4
+     opacity: 1
 });
 
-
-
-iconMenu.group.add(undoIcon);
+iconMenu.group.add(undoButton);
 iconMenu.group.add(undoText);
+
+undoText.cache();
+resetText.cache();
 
 undoText.setListening(false);
 
-iconMenu.group.add(resetIcon);
+iconMenu.group.add(resetButton);
 iconMenu.group.add(resetText);
 
 resetText.setListening(false);
@@ -978,16 +972,16 @@ iconMenu.setListening(false);
           x = eval(problemPosFormula) + circleDiameter * 1.2;
         }
 
-
-
         opacity = i > 1 ? 0.4 : 1.0;
 
         var egg = new Konva.Circle({
-            radius: (circleDiameter / 2),
+            radius: (circleDiameter / 2) * circleFocusMultiplier,
             stroke: circleStrokeColor,
+            scaleX: 1 / circleFocusMultiplier,
+            scaleY: 1 / circleFocusMultiplier,
             name : 'egg_' + i,
             opacity: opacity,
-            fill: i < 1 ? circleDropColor : circleFillColor,
+            fill: circleDropColor,
         });
 
         egg.isPrecursor = i < 1;
@@ -1004,6 +998,8 @@ iconMenu.setListening(false);
         previousEgg = egg;
 
         egg.group.moveToBottom();
+
+        egg.cache();
 
         if(i === 1) {
           focusedEgg = egg;
@@ -1030,15 +1026,16 @@ app.currentDragObject = null;
 stage.on("dragstart", function(e){
     e.target.moveTo(tempLayer);
     app.currentDragObject = e.target;
-  //  text.text('Moving ' + e.target.name());
 
-    staticLayer.draw();
-    focusLayer.draw();
+    tempLayer.batchDraw();
+    staticLayer.batchDraw();
+    focusLayer.batchDraw();
     //
 });
 
 var previousShape;
 stage.on("dragmove", function(evt){
+
     var pos = stage.getPointerPosition();
     var shape = focusLayer.getIntersection(pos);
     tempLayer.moveToTop();
@@ -1080,6 +1077,8 @@ stage.on("dragmove", function(evt){
         }, true);
      previousShape = undefined;
     }
+
+
 });
 stage.on("dragend", function(e){
     var pos = stage.getPointerPosition();
@@ -1096,14 +1095,13 @@ stage.on("dragend", function(e){
               }, true);
 
           previousShape = undefined;
+
           e.target.moveTo(shape.group);
-          e.target.x(-55);
-          e.target.y(-50);
+          e.target.x(0-circleDiameter/2);//- 1 / (pos.x / shape.group.x));
+          e.target.y(0-circleDiameter/2);//- 1 / (pos.y / dr.y));
+
           e.target.moveToTop();
-          shape.group.draw();
-          staticLayer.draw();
-          focusLayer.draw();
-          tempLayer.draw();
+
           return;
       }
   }
@@ -1115,11 +1113,6 @@ stage.on("dragend", function(e){
 stage.on("dragenter", function(e){
     if(e.target.opacity < interactableThresholdOpacity) return false;
 
-    if(e.target instanceof Konva.Circle) {
-    //  e.target.fill(circleHoverColor);
-  //    text.text('dragenter ' + e.target.name());
-    //  layer.draw();
-  }
 });
 
 stage.on("dragleave", function(e){
@@ -1145,18 +1138,16 @@ stage.on("dragover", function(e){
 });
 
 stage.on("drop", function(e){
-
+  var pointerPos = stage.getPointerPosition();
   if(e.target.opacity() !== 1.0) {
       ui.returnToContainer(app.currentDragObject, iconHomeScale);
       return;
   }
 
   if(e.target instanceof Konva.Circle) {
-        e.target.fill(circleDropColor);
-        if(! ui.placeInEgg(e.target)) {
+        if(! ui.placeInEgg(e.target, pointerPos)) {
             ui.returnToContainer(app.currentDragObject, iconHomeScale);
         }
-
   }
 });
 
@@ -1200,8 +1191,6 @@ stage.on("mousedown", function(e){
       return false;
   }
 
-  console.log(e);
-
       var shape = e.target;
 
       if(shape && typeof shape.getUIComponentType === 'function') {
@@ -1224,7 +1213,7 @@ stage.on("touchend mouseup", function(e){
                         ui.undo();
                     break;
                     case 'reset':
-                        console.log('reset');
+                        window.location.reload();
               }
 
               shape.fill(buttonFillColor);
@@ -1232,6 +1221,29 @@ stage.on("touchend mouseup", function(e){
           }
       }
 });
+
+// jquery events
+$(stage).on('touchEgg', function(e, args){
+		$("#labelme").css({left: args.egg.group.x(), top: args.egg.group.y()}).show();
+
+    $("#labelme input").on('change', function(e) {
+        if(!args.egg.label) {
+            args.egg.label = $(args.egg.label).clone(args.egg.next.label);
+            app.safeLabel = args.egg.label;
+        }
+
+        var str = args.egg.label.text();
+        var type = $(e.target).closest('label').text();
+        args.egg.label.text(str + "\n("+type+")");
+        args.callback();
+        $("#labelme").hide().find('input').prop('checked', false).off('change');
+    });
+});
+
+
+
+DOMLabelWidth = $('#labelme').width();
+DOMLabelHeight = $('#labelme').height();
 }};
 
 

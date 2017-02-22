@@ -29,3 +29,13 @@ iframe#konva_portal {
   border: thin solid #ddd;
   overflow: hidden;
 }
+#labelme {
+     position: absolute;
+    top: 10;
+    left: 10;
+    width: 9em;
+    border: thin solid black;
+    background: #DDD;
+    opacity: 0.9;
+    display: none;
+}
