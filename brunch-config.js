@@ -24,7 +24,10 @@ module.exports = {
           DEBUG: false
         }
       }
-    }
+    },
+  },
+  javascript: {
+    validate: true,
   },
   server: {
     port: 3333,

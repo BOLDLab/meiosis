@@ -22,22 +22,17 @@ var buttonClickColor = 'orange';
 var interactableThresholdOpacity = 0.8;
 
 var topOffset = -35;
-var problemPosFormula = 'stage.width() - (circleDiameter * 5)';
-var cctXPos = 'iconWidth / 4';
-var cctYPos = 'iconWidth * 1.2';
+
 
 var iconWidth = 140;
 var iconHeight = 140;
 var iconHomeScale = 0.8;
-var iconHSpacing = 'iconWidth * 0.6';
-var iconVSpacing = 'iconHeight * 0.8';
 var iconsPerRow = 3;
 
 var containerFill = circleHoverColor;//'rgb(201,200,184)';
 var containerStroke = 'black';
 var containerHeight = 400;
-var containerWidth = (iconWidth * iconsPerRow) * (iconHomeScale - 0.17);//- (iconWidth * 0.25);
-
+//- (iconWidth * 0.25);
 var rightLabelOffset = - (circleSpace / 2);
 var leftLabelOffset = -(circleSpace);
 var scrollDistance = 5;
@@ -136,7 +131,15 @@ var undoHistory = [];
 var DOMLabelWidth = 0; // set with jquery
 var DOMLabelHeight = 0;
 
-var debug = false;
+var DEBUG = false;
+
+// evaluate dimensions
+var problemPosFormula = stage.width() - (circleDiameter * 5);
+var cctXPos = iconWidth / 4;
+var cctYPos = iconWidth * 1.2;
+var iconHSpacing = iconWidth * 0.6;
+var iconVSpacing = iconHeight * 0.8;
+var containerWidth = (iconWidth * iconsPerRow) * (iconHomeScale - 0.17);
 
 var ui = {
 
@@ -179,10 +182,11 @@ undo: function() {
                 egg.opacity(1.0);
 
                 var str = egg.label.text();
+
                 var dipi = str.indexOf("\n(Diploid)");
                 var hapi = str.indexOf("\n(Haploid)");
 
-                var pos = dipi || hapi;
+                var pos = dipi > 0 ? dipi : hapi;
 
                 if(pos > 0) {
                   str = str.substr(0, pos);
@@ -214,17 +218,20 @@ undo: function() {
 },
 
 debugRect: function(x, y, w, h) {
-    if(! debug) return false;
+    if(DEBUG) {
 
-    var rect = new Konva.Rect({
-        stroke: 'black',
-        x: x - 5,
-        y: y - 5,
-        width: w + 10,
-        height: h + 10
-    });
+        var rect = new Konva.Rect({
+            stroke: 'black',
+            x: x - 5,
+            y: y - 5,
+            width: w + 10,
+            height: h + 10
+        });
 
-    layer.add(rect);
+        layer.add(rect);
+   }
+
+  return false;
 },
 
 isIcon: function(val) {
@@ -509,8 +516,8 @@ if(ui.icon.konvaWrappers[seqStr].length === 0) {
 
   var xchromPos = 0;
   var ychromPos = 0;
-  var vSpace = eval(iconVSpacing);
-  var hSpace = eval(cctXPos) - (eval(iconHSpacing) * 0.075);
+  var vSpace = iconVSpacing;
+  var hSpace = cctXPos - iconHSpacing * 0.075;
 
 ui.icon.images = ui.icon.images || {};
 ui.icon.images[seqStr] = ui.icon.images[seqStr] || [];
@@ -543,7 +550,7 @@ imageSources.sequences[seqStr].icons.forEach(function(src, inx) {
         iconMenu.group.draw();
   };
 
-  xchromPos += eval(iconHSpacing);
+  xchromPos += iconHSpacing;
 
   ychromPos += ((inx + 1) % iconsPerRow) == 0 ? vSpace : 0;
   xchromPos = ((inx + 1) % iconsPerRow) === 0 ? hSpace : xchromPos;
@@ -837,8 +844,8 @@ var text = new Konva.Text({
 
 // setup chromosome container
 var iconMenu = new Konva.Rect({
-  x: 0,//eval(cctXPos),
-  y: 0,//eval(cctYPos),
+  x: 0,
+  y: 0,
       width: containerWidth,
       height: containerHeight,
       fill: containerFill,
@@ -848,8 +855,8 @@ var iconMenu = new Konva.Rect({
 });
 
 iconMenu.uiContainer({
-      x: eval(cctXPos),
-      y: eval(cctYPos)
+      x: cctXPos,
+      y: cctYPos
 });
 
 var undoButton = new Konva.Rect({
@@ -929,7 +936,7 @@ iconMenu.setListening(false);
         var y;
 
         if(i == 0) {
-              x = eval(problemPosFormula) - (circleDiameter * 2);
+              x = problemPosFormula - (circleDiameter * 2);
               y = circleDiameter + topOffset;
 
               var pX = x; // create local instance
@@ -953,23 +960,23 @@ iconMenu.setListening(false);
               };
 
         } else if(i < 5) {
-           x = eval(problemPosFormula) - (circleDiameter / 2);
+           x = problemPosFormula - (circleDiameter / 2);
            y = circleDiameter + yoff + topOffset;
            yoff += circleSpace;
         } else if(i < 16 && i % 2 == 1) {
-           x = eval(problemPosFormula)  - circleDiameter * 1.5;
+           x = problemPosFormula  - circleDiameter * 1.5;
            y = circleDiameter + yoff + topOffset;;
         } else if(i < 16 && i % 2 == 0) {
-          x = eval(problemPosFormula) + circleDiameter / 2;
+          x = problemPosFormula + circleDiameter / 2;
 
           yoff += circleSpace;
         } else if(i == 16) {
-          x = eval(problemPosFormula) - circleDiameter * 2.8;
+          x = problemPosFormula - circleDiameter * 2.8;
           y = circleDiameter + yoff + topOffset;
         } else if(i == 17) {
-          x = eval(problemPosFormula) - circleDiameter * 0.2;
+          x = problemPosFormula - circleDiameter * 0.2;
         } else if(i == 18) {
-          x = eval(problemPosFormula) + circleDiameter * 1.2;
+          x = problemPosFormula + circleDiameter * 1.2;
         }
 
         opacity = i > 1 ? 0.4 : 1.0;
