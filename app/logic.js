@@ -67,11 +67,23 @@ var imageSources = {
                     sequences: {
                       PROPHASE_I:  {
                         icons: [  'img/Prophase-1.png',
-                                  'img/X-version-Prophase-1.png',
-                                  'img/X-version-Precursor-Germ-Cell.png']
+                                  'img/X-Prophase-1A.png',
+                                  'img/X-Prophase-1B.png'],
+                        answerIds: [ 'c' , 'x1' , 'x2']
                       },
                        METAPHASE_I:  {
-                          icons: [ 'img/Metaphase-1.png']
+                          // links to previous answers
+                          links: {
+                            c: ['c'],
+                            x1: ['x1','x2'],
+                            x2: ['x1','x3']
+                          },
+                          icons: [ 'img/Metaphase-1.png',
+                                    'img/X-Metaphase-1A.png',
+                                    'img/X-Metaphase-1B.png',
+                                    'img/X-Metaphase-1C.png',
+                                  ],
+                          answerIds: ['c', 'x1', 'x2', 'x3'],
                       },
                        ANAPHASE_I:  {
                           icons: [ 'img/Anaphase-1.png']
@@ -130,7 +142,7 @@ var undoHistory = [];
 var DOMLabelWidth = 0; // set with jquery
 var DOMLabelHeight = 0;
 
-var DEBUG = false;
+var DEBUG = true;
 
 // evaluate dimensions
 var problemPosFormula = stage.width() - (circleDiameter * 5);
@@ -166,6 +178,7 @@ undo: function() {
 
     if(egg) {
         ui.clearIconMenu();
+    //    ui.updateIcons(egg);
 
         if(egg.chromos.length > 0) {
           var ret = egg.chromos.pop();
@@ -176,6 +189,7 @@ undo: function() {
                 undoHistory.pop();
 
                 ui.resetMenuOptions(egg.sequence && egg.sequence > 0 ? egg.sequence : 1);
+                //ui.resetMenuOptions(egg);
 
                 egg.fill(circleFillColor);
                 egg.opacity(1.0);
@@ -194,10 +208,12 @@ undo: function() {
 
                 if(egg.prev && !egg.prev.isPrecursor) {
                     egg.prev.opacity(1.0);
+                    egg.prev.canswerId = null;
                     ui.toggleAllIconsDraggable(egg.prev, true);
                 }
                 if(egg.next) {
                     egg.next.opacity(0.4);
+                    egg.next.canswerId = null;
                     ui.toggleAllIconsDraggable(egg.next, false);
                 }
 
@@ -310,12 +326,12 @@ toggleAllIconsDraggable: function(egg, draggable) {
 },
 
 placeInEgg: function(egg, pointerPos, sizeChangeOnDrop) {
-
-
     sizeChangeOnDrop = sizeChangeOnDrop || 0.8;
 
     var w = app.currentDragObject.getWidth();
     var h = app.currentDragObject.getHeight();
+
+    egg.canswerId = app.currentDragObject.answerId;
 
     if(sizeChangeOnDrop) {
         if(w > iconWidth) {
@@ -359,13 +375,13 @@ placeInEgg: function(egg, pointerPos, sizeChangeOnDrop) {
               app.currentDragObject.setPlaced(true);
 
         }
-      }
+    }
 
     if(egg.next) {
 
         $(egg).trigger('beforeEggTween', { callback: function() {
           focusLayer.hide();
-          ui.updateIcons(egg.next.sequence);
+          ui.updateIcons(egg.next);
           egg.moveToBottom();
           ui.focus(egg, {focusOut: true,
                             onComplete: function() {
@@ -458,7 +474,7 @@ returnToContainer: function(icon, scaled) {
   icon.setPlaced(false);
 
   if(icon.inEgg && icon.inEgg.prev) {
-      ui.updateIcons(icon.inEgg.prev.sequence);
+      ui.updateIcons(icon.inEgg.prev);
   }
   delete(icon.inEgg);// = null;
 },
@@ -495,8 +511,52 @@ icon: {
             });
         }
   },
-updateIcons: function(sequence) {
+hideUnusedIcons: function(inx, seqStr, egg) {
 
+  var answerId = imageSources.sequences[seqStr].answerIds[inx];
+  ui.icon.konvaWrappers[seqStr][inx].answerId = answerId;
+
+  var eggAnswer = egg.prev ? egg.prev.canswerId : egg.canswerId;
+
+  if(eggAnswer) {
+    if(imageSources.sequences[seqStr].
+        links[eggAnswer].indexOf(answerId) === -1)
+    {
+
+    if(DEBUG) {
+      if(egg.prev) {
+        console.log("Prev: "+egg.prev.canswerId);
+        console.log(" in > "+seqStr);
+        console.log(imageSources.sequences[seqStr].links[eggAnswer].indexOf(answerId));
+        console.log(' === ');
+        console.log(answerId);
+      }
+    }
+
+      console.log(eggAnswer+" hiding "+inx);
+      var _node = ui.icon.konvaWrappers[seqStr][inx];
+      _node.hide();
+    //  _node.setX(5000); //place off stage
+
+  }else {
+    var _node = ui.icon.konvaWrappers[seqStr][inx];
+    /*  iconMenu.group.add(_node);
+      var o = _node.getHomePos();
+      _node.setX(o.x);
+      _node.setY(o.y);*/
+      _node.moveToTop();
+      _node.show();
+  }
+} /**/
+},
+
+updateIcons: function(egg) {
+var sequence;
+if(typeof egg === 'number') {
+  sequence = egg;
+} else {
+  sequence = egg.sequence;
+}
 var seqStr = app.sequences[sequence];
 loadCount[seqStr] = 0;
 
@@ -518,7 +578,8 @@ if(ui.icon.konvaWrappers[seqStr].length === 0) {
 ui.icon.images = ui.icon.images || {};
 ui.icon.images[seqStr] = ui.icon.images[seqStr] || [];
 
-imageSources.sequences[seqStr].icons.forEach(function(src, inx) {
+imageSources.sequences[seqStr].icons.forEach(
+  function(src, inx) {
 
   ui.icon.images[seqStr][inx] = new Image();
 
@@ -543,25 +604,32 @@ imageSources.sequences[seqStr].icons.forEach(function(src, inx) {
         iconMenu.group.add(ui.icon.konvaWrappers[seqStr][inx]);
       //  iconMenu.uiContainer.moveTopBottom();
         ui.icon.konvaWrappers[seqStr][inx].moveToTop();
-        iconMenu.group.draw();
   };
 
+  //iconMenu.group.draw();
   xchromPos += iconHSpacing;
 
   ychromPos += ((inx + 1) % iconsPerRow) === 0 ? vSpace : 0;
   xchromPos = ((inx + 1) % iconsPerRow) === 0 ? hSpace : xchromPos;
-  });
+
+  ui.hideUnusedIcons(inx, seqStr, egg);
+
+  }
+);
 
   ui.icon.images[seqStr].forEach(function(img, inx) {
       ui.icon.images[seqStr][inx].src = urlBase + imageSources.sequences[seqStr].icons[inx];
   });
-} else {
-    ui.icon.konvaWrappers[seqStr].forEach(function(icon) {
-          icon.show();
-    });
 
-    staticLayer.draw();
+} else {
+    ui.icon.konvaWrappers[seqStr].forEach(function(icon, inx) {
+          icon.show();
+          ui.hideUnusedIcons(inx, seqStr, egg);
+    });
 }
+
+//iconMenu.group.draw();
+//staticLayer.draw();
 
 if(focusedEgg.group.startingPosition && sequence == 1) {
     ui.focus(focusedEgg);
@@ -767,6 +835,9 @@ Konva.Rect.prototype.getUIComponentType = function() {
 };
 
 Konva.Group.prototype.startingPosition = null;
+Konva.Image.prototype.answerId = null;
+
+Konva.Circle.prototype.canswerId = null;
 
 // egg settings
 Konva.Circle.prototype.initEgg = function(params) {
@@ -1030,6 +1101,8 @@ stage.on("dragstart", function(e){
     e.target.moveTo(tempLayer);
     app.currentDragObject = e.target;
 
+    console.log("Dragging");
+    console.log(app.currentDragObject);
     tempLayer.batchDraw();
     staticLayer.batchDraw();
     focusLayer.batchDraw();
