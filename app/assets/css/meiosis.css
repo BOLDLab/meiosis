@@ -2,11 +2,12 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #F0F0F0;
+
     min-width: 645px;
     min-height: 645px;
     width: 605px;
     height: 605px;
+    font-family: 'Calibri', verdana, sans-serif;
 }
 
 #desc {
@@ -28,6 +29,8 @@ iframe#konva_portal {
   height: 620px;
   border: thin solid #ddd;
   overflow: hidden;
+  background-color: #F7DFAE;
+  margin: 1em;
 }
 #labelme {
      position: absolute;
@@ -38,4 +41,8 @@ iframe#konva_portal {
     background: #DDD;
     opacity: 0.9;
     display: none;
+}
+h2 {
+  margin:1em;
+  font-size: 20pt;
 }

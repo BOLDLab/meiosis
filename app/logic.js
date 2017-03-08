@@ -7,6 +7,8 @@ var width = 800;
 var height = 610;
 var circleDiameter = 90;
 var circleSpace = 100;
+
+var borderColor = '#896724';
 var circleFillColor = 'rgb(201,200,184)';//'rgba(254,255,173,0.8)';
 var circleDropColor = '#FFF';//'#DAD7C5';
 var circleHoverColor = '#EEE';//'rgb(117,128,194)';
@@ -14,10 +16,10 @@ var circleStrokeColor = 'black';
 
 var circleFocusMultiplier = 2.3;
 
-var buttonLabelColor = 'rgb(117,128,194)';
-var buttonFillColor = circleFillColor;
-var buttonHoverColor = circleDropColor;
-var buttonClickColor = 'orange';
+var buttonLabelColor = '#F7DFAE';
+var buttonFillColor = '#467D7D';
+var buttonHoverColor = '#699494';
+var buttonClickColor = '#FFD874';
 
 var interactableThresholdOpacity = 0.8;
 
@@ -28,13 +30,13 @@ var iconHeight = 140;
 var iconHomeScale = 0.8;
 var iconsPerRow = 3;
 
-var containerFill = circleHoverColor;//'rgb(201,200,184)';
+var containerFill = '#FFF1D6';//'rgb(201,200,184)';
 var containerStroke = 'black';
 var containerHeight = 400;
 //- (iconWidth * 0.25);
 var rightLabelOffset = - (circleSpace / 2);
 var leftLabelOffset = - (circleSpace);
-var scrollDistance = 5;
+var scrollDistance = 10;
 var urlBase = '';//'/test/meiosis/'
 
 var focusedEgg = null;
@@ -83,24 +85,240 @@ var imageSources = {
                                     'img/X-Metaphase-1B.png',
                                     'img/X-Metaphase-1C.png',
                                   ],
-                          answerIds: ['c', 'x1', 'x2', 'x3'],
+                          answerIds: ['x2', 'x1', 'c', 'x3'],
                       },
                        ANAPHASE_I:  {
-                          icons: [ 'img/Anaphase-1.png']
+                         links: {
+                           c: ['c','x1'],
+                           x1: ['x2'],
+                           x2: ['x3','x1'],
+                           x3: ['x2','x1','x3'],
+                         },
+                          icons: [ 'img/Anaphase-1.png',
+                          'img/X-Metaphase-1A.png',
+                          'img/X-Metaphase-1B.png',
+                          'img/X-Metaphase-1C.png',],
+                        answerIds: ['x3', 'x1', 'x2', 'c'],
                      },
-                       TELOPHASE_I:  {
-                          icons: [ 'img/Telophase-1.png']
+                     TELOPHASE_I:  {
+                         links: {
+                           c: ['c'],
+                           x1: ['x1','x2'],
+                           x2: ['x1','x3'],
+                          x3: ['x2','x1','x3'],
+                         },
+                          icons: [ 'img/Telophase-1.png',
+                          'img/X-Metaphase-1A.png',
+                          'img/X-Metaphase-1B.png',
+                          'img/X-Metaphase-1C.png',],
+                          answerIds: ['x2', 'x1', 'c', 'x3'],
                      },
                      CYTOKINESIS_A:  {
-                          icons: [ 'img/A. Cytokinesis.png',
-                                  'img/B. Cytokinesis.png']
+                       links: {
+                         c: ['c'],
+                         x1: ['x1','x2'],
+                         x2: ['x1','x3'],
+                            x3: ['x2','x1','x3'],
+                       },
+                      icons: [ 'img/A. Cytokinesis.png',
+                                  'img/B. Cytokinesis.png',
+                                  'img/X-Metaphase-1A.png',
+                                  'img/X-Metaphase-1B.png',
+                                  'img/X-Metaphase-1C.png',],
+                      answerIds: ['x2', 'x1', 'c', 'x3', 'x4'],
                      },
                      CYTOKINESIS_B:  {
+                       links: {
+                         c: ['c'],
+                         x1: ['x1','x2'],
+                         x2: ['x1','x3'],
+                            x3: ['x2','x1','x3'],
+                            x4: ['x2','x3','x1', 'c']
+                       },
                         icons: [ 'img/A. Cytokinesis.png',
-                                'img/B. Cytokinesis.png']
-                    }
+                                'img/B. Cytokinesis.png',
+                                'img/X-Metaphase-1A.png',
+                                'img/X-Metaphase-1B.png',
+                                'img/X-Metaphase-1C.png',],
+                        answerIds: ['x3', 'x1', 'x2', 'c'],
+                    },
+                    PROPHASE_II_A:  {
+                      links: {
+                        c: ['c'],
+                        x1: ['x1','x2'],
+                        x2: ['x1','x3'],
+                           x3: ['x2','x1','x3'],
+                      },
+                       icons: [ 'img/A. Cytokinesis.png',
+                               'img/B. Cytokinesis.png',
+                               'img/X-Metaphase-1A.png',
+                               'img/X-Metaphase-1B.png',
+                               'img/X-Metaphase-1C.png'],
+                       answerIds: ['c', 'x1', 'x2', 'x3'],
+                   },
+                   PROPHASE_II_B:  {
+                     links: {
+                       c: ['c'],
+                       x1: ['x1','x2'],
+                       x2: ['x1','x3'],
+                          x3: ['x2','x1','x3'],
+                     },
+                      icons: [ 'img/A. Cytokinesis.png',
+                              'img/B. Cytokinesis.png',
+                              'img/X-Metaphase-1A.png',
+                              'img/X-Metaphase-1B.png',
+                              'img/X-Metaphase-1C.png'],
+                      answerIds: ['c', 'x1', 'x2', 'x3'],
+                  },
+                   METAPHASE_II_A:  {
+                     links: {
+                       c: ['c'],
+                       x1: ['x1','x2'],
+                       x2: ['x1','x3'],
+                          x3: ['x2','x1','x3'],
+                     },
+                      icons: [ 'img/A. Cytokinesis.png',
+                              'img/B. Cytokinesis.png',
+                              'img/X-Metaphase-1A.png',
+                              'img/X-Metaphase-1B.png',
+                              'img/X-Metaphase-1C.png',],
+                      answerIds: ['c', 'x1', 'x2', 'x3'],
+                  },
+                  METAPHASE_II_B:  {
+                    links: {
+                      c: ['c'],
+                      x1: ['x1','x2'],
+                      x2: ['x1','x3'],
+                         x3: ['x2','x1','x3'],
+                    },
+                     icons: [ 'img/A. Cytokinesis.png',
+                             'img/B. Cytokinesis.png',
+                             'img/X-Metaphase-1A.png',
+                             'img/X-Metaphase-1B.png',
+                             'img/X-Metaphase-1C.png',],
+                     answerIds: ['c', 'x1', 'x2', 'x3'],
+                 },
+                  ANAPHASE_II_A:  {
+                    links: {
+                      c: ['c'],
+                      x1: ['x1','x2'],
+                      x2: ['x1','x3'],
+                         x3: ['x2','x1','x3'],
+                    },
+                     icons: [ 'img/A. Cytokinesis.png',
+                             'img/B. Cytokinesis.png',
+                             'img/X-Metaphase-1A.png',
+                             'img/X-Metaphase-1B.png',
+                             'img/X-Metaphase-1C.png',],
+                     answerIds: ['c', 'x1', 'x2', 'x3'],
+                 },
+                 ANAPHASE_II_B:  {
+                   links: {
+                     c: ['c'],
+                     x1: ['x1','x2'],
+                     x2: ['x1','x3'],
+                        x3: ['x2','x1','x3'],
+                   },
+                    icons: [ 'img/A. Cytokinesis.png',
+                            'img/B. Cytokinesis.png',
+                            'img/X-Metaphase-1A.png',
+                            'img/X-Metaphase-1B.png',
+                            'img/X-Metaphase-1C.png',],
+                    answerIds: ['c', 'x1', 'x2', 'x3'],
+                },
+                 TELOPHASE_II_A:  {
+                   links: {
+                     c: ['c'],
+                     x1: ['x1','x2'],
+                     x2: ['x1','x3'],
+                        x3: ['x2','x1','x3'],
+                   },
+                    icons: [ 'img/A. Cytokinesis.png',
+                            'img/B. Cytokinesis.png',
+                            'img/X-Metaphase-1A.png',
+                            'img/X-Metaphase-1B.png',
+                            'img/X-Metaphase-1C.png',],
+                    answerIds: ['c', 'x1', 'x2', 'x3'],
+                },
+                TELOPHASE_II_B:  {
+                  links: {
+                    c: ['c'],
+                    x1: ['x1','x2'],
+                    x2: ['x1','x3'],
+                       x3: ['x2','x1','x3'],
+                  },
+                   icons: [ 'img/A. Cytokinesis.png',
+                           'img/B. Cytokinesis.png',
+                           'img/X-Metaphase-1A.png',
+                           'img/X-Metaphase-1B.png',
+                           'img/X-Metaphase-1C.png',],
+                   answerIds: ['c', 'x1', 'x2', 'x3'],
+               },
+                CYTOKINESIS_C:  {
+                  links: {
+                    c: ['c'],
+                    x1: ['x1','x2'],
+                    x2: ['x1','x3'],
+                       x3: ['x2','x1','x3'],
+                  },
+                   icons: [ 'img/A. Cytokinesis.png',
+                           'img/B. Cytokinesis.png',
+                           'img/X-Metaphase-1A.png',
+                           'img/X-Metaphase-1B.png',
+                           'img/X-Metaphase-1C.png',],
+                   answerIds: ['c', 'x1', 'x2', 'x3','x4','x5'],
+               },
+               CYTOKINESIS_D:  {
+                 links: {
+                   c: ['c'],
+                   x1: ['x1','x2'],
+                   x2: ['x1','x3'],
+                      x3: ['x2','x1','x3'],
+                 },
+                  icons: [ 'img/A. Cytokinesis.png',
+                          'img/B. Cytokinesis.png',
+                          'img/X-Metaphase-1A.png',
+                          'img/X-Metaphase-1B.png',
+                          'img/X-Metaphase-1C.png',
+                          'img/X-Metaphase-1C.png'],
+                  answerIds: ['c', 'x1', 'x2', 'x3','x4','x5'],
+              },
+              CYTOKINESIS_E:  {
+                links: {
+                  c: ['c'],
+                  x1: ['x1','x2'],
+                  x2: ['x1','x3'],
+                     x3: ['x2','x1','x3'],
+                     x4: ['c','x4'],
+                     x5: ['x2','x3']
+                },
+                 icons: [ 'img/A. Cytokinesis.png',
+                         'img/B. Cytokinesis.png',
+                         'img/X-Metaphase-1A.png',
+                         'img/X-Metaphase-1B.png',
+                         'img/X-Metaphase-1C.png',
+                       'img/X-Metaphase-1C.png'],
+                answerIds: ['c', 'x1', 'x2', 'x3','x4','x5'],
+             },
+             CYTOKINESIS_F:  {
+                     links: {
+                       c: ['c'],
+                       x1: ['x1','x2'],
+                       x2: ['x1','x3'],
+                      x3: ['x2','x1','x3'],
+                      x4: ['c','x4'],
+                      x5: ['x2','x3']
+                     },
+                     icons: [ 'img/A. Cytokinesis.png',
+                             'img/B. Cytokinesis.png',
+                             'img/X-Metaphase-1A.png',
+                             'img/X-Metaphase-1B.png',
+                             'img/X-Metaphase-1C.png',
+                           'img/X-Metaphase-1C.png'],
+                     answerIds: ['c', 'x1', 'x2', 'x3','x4','x5'],
                    }
-                };
+                }
+            };
 
 app.sequences = [ null,
                'PROPHASE_I',
@@ -109,10 +327,14 @@ app.sequences = [ null,
                'TELOPHASE_I',
                'CYTOKINESIS_A',
                'CYTOKINESIS_B',
-               'PROPHASE_II',
-               'METAPHASE_II',
-               'ANAPHASE_II',
-               'TELOPHASE_II',
+               'PROPHASE_II_A',
+               'PROPHASE_II_B',
+               'METAPHASE_II_A',
+               'METAPHASE_II_B',
+               'ANAPHASE_II_A',
+               'ANAPHASE_II_B',
+               'TELOPHASE_II_A',
+               'TELOPHASE_II_B',
                'CYTOKINESIS_C',
                'CYTOKINESIS_D',
                'CYTOKINESIS_E',
@@ -158,7 +380,7 @@ setEggLabel: function(i, egg, x, y) {
   if(! textEggLabels[i]) return false;
 
   var text = new Konva.Text({
-      fill : 'black',
+      fill : '#1F325C',
       x: x + textEggLabels[i].x,
       y: y + textEggLabels[i].y,
       fontSize: '14'
@@ -178,18 +400,16 @@ undo: function() {
 
     if(egg) {
         ui.clearIconMenu();
-    //    ui.updateIcons(egg);
 
         if(egg.chromos.length > 0) {
           var ret = egg.chromos.pop();
-          ui.returnToContainer(ret);
+          ui.returnToContainer(ret, iconHomeScale);
         }
 
         if(egg.chromos.length === 0) {
                 undoHistory.pop();
 
-                ui.resetMenuOptions(egg.sequence && egg.sequence > 0 ? egg.sequence : 1);
-                //ui.resetMenuOptions(egg);
+                ui.resetMenuOptions(egg);
 
                 egg.fill(circleFillColor);
                 egg.opacity(1.0);
@@ -217,6 +437,8 @@ undo: function() {
                     ui.toggleAllIconsDraggable(egg.next, false);
                 }
 
+              //  ui.updateIcons(egg);
+
                 layer.batchDraw();
 
                 ui.focus(egg.next, { focusOut: true,
@@ -229,6 +451,8 @@ undo: function() {
                               }
                           );
         }
+
+
     }
 },
 
@@ -236,7 +460,7 @@ debugRect: function(x, y, w, h) {
     if(DEBUG) {
 
         var rect = new Konva.Rect({
-            stroke: 'black',
+            stroke: borderColor,
             x: x - 5,
             y: y - 5,
             width: w + 10,
@@ -307,7 +531,9 @@ moveIcons: function(layer1, layer2) {
 
     ui.getOrphanedIcons(layer1).forEach(function(icon)
       {
-        console.log('moving icon '+icon.name()+' from '+layer1.name()+'  to '+layer2.name());
+        if(DEBUG) {
+          console.log('moving icon '+icon.name()+' from '+layer1.name()+'  to '+layer2.name());
+        }
           icon.moveTo(layer2);
           icon.moveToTop();
       });
@@ -377,38 +603,39 @@ placeInEgg: function(egg, pointerPos, sizeChangeOnDrop) {
         }
     }
 
-    if(egg.next) {
-
-        $(egg).trigger('beforeEggTween', { callback: function() {
+if(egg) {
+    $(egg).trigger('beforeEggTween', { callback: function() {
           focusLayer.hide();
-          ui.updateIcons(egg.next);
+
           egg.moveToBottom();
           ui.focus(egg, {focusOut: true,
                             onComplete: function() {
                                   focusLayer.show();
-                              ui.focus(egg.next,
-                                {focusOut: false,
-                                onComplete: function() {
+                                    app.lastEggDrop = egg.next || 'finish';
+                                    if(egg.next) {
 
-                                }});
-                              egg.next.moveToTop();
+                                            ui.updateIcons(egg.next);
+                                            ui.focus(egg.next,
+                                              {focusOut: false,
+                                              onComplete: function() {
+
+                                              }});
+                                          egg.next.moveToTop();
+                                    }
                             }});
         }
-      });
-    }
-  //  app.currentDragObject.setX(pointerPos.x + (app.currentDragObject.getWidth/2));
-  //  app.currentDragObject.setY(pointerPos.y + (app.currentDragObject.getHeight/2));
+  });
+}
 
     return true;
 },
 
 scrollPage: function(egg) {
-  //    ui.moveIcons(layer, tempLayer);
+      if(!egg) return false;
 
-  //    tempLayer.draw();
-  //  layer.draw();
       var layerCentre = (layer.y() / 2);
       var y =  layerCentre < egg.group.y() ? -egg.group.y() / 20 : egg.group.y() / 20;
+      y = y * scrollDistance;
 
         app.tween = new Konva.Tween({
           node: layer,
@@ -416,8 +643,6 @@ scrollPage: function(egg) {
           y: y,
           opacity: 1,
           onFinish: function() {
-              //ui.moveIcons(tempLayer, layer);
-
               layer.draw();
               tempLayer.draw();
               staticLayer.draw();
@@ -426,25 +651,13 @@ scrollPage: function(egg) {
 
       if(app.timeout)
         clearTimeout(app.timeout);
-      // start tween after 2 seconds
+
       app.timeout = setTimeout(function() {
           app.tween.play();
       }, 10);
 
-      //focusedEgg.moveTo(layer);
 },
-
-/*doScroll: function(direction) {
-  //var isUndo = isUndo || false;
-  if(egg && egg.scrollPageOnDrop !== null) {
-      ui.scrollPage(direction);
-      //scrollOnReady(direction, egg.sequence);
-
-    //  egg.scrollPageOnDrop = egg.scrollPageOnDrop === 'down' ? 'up' : 'down';
-  }
-},*/
 returnToContainer: function(icon, scaled) {
-  scaled = 1.0;
 
   if(icon.getWidth() !== iconWidth) {
       icon.setWidth(iconWidth * scaled);
@@ -516,15 +729,37 @@ hideUnusedIcons: function(inx, seqStr, egg) {
   var answerId = imageSources.sequences[seqStr].answerIds[inx];
   ui.icon.konvaWrappers[seqStr][inx].answerId = answerId;
 
+  if(DEBUG) {
+    console.log("Next egg");
+    console.log(egg.next);
+    console.log("Prev egg");
+    console.log(egg.prev);
+    console.log("Current egg");
+    console.log(egg);
+  }
+
   var eggAnswer = egg.prev ? egg.prev.canswerId : egg.canswerId;
 
+  var _node = ui.icon.konvaWrappers[seqStr][inx];
+
+  _node.show();
+
+  if(DEBUG) {
+    console.log("Current icon node");
+    console.log(_node.name());
+    console.log("Visible?: ");
+    console.log(_node.visible());
+  }
   if(eggAnswer) {
+  try {
     if(imageSources.sequences[seqStr].
         links[eggAnswer].indexOf(answerId) === -1)
     {
 
     if(DEBUG) {
       if(egg.prev) {
+
+
         console.log("Prev: "+egg.prev.canswerId);
         console.log(" in > "+seqStr);
         console.log(imageSources.sequences[seqStr].links[eggAnswer].indexOf(answerId));
@@ -534,20 +769,24 @@ hideUnusedIcons: function(inx, seqStr, egg) {
     }
 
       console.log(eggAnswer+" hiding "+inx);
-      var _node = ui.icon.konvaWrappers[seqStr][inx];
+
       _node.hide();
     //  _node.setX(5000); //place off stage
 
   }else {
-    var _node = ui.icon.konvaWrappers[seqStr][inx];
-    /*  iconMenu.group.add(_node);
-      var o = _node.getHomePos();
-      _node.setX(o.x);
-      _node.setY(o.y);*/
-      _node.moveToTop();
-      _node.show();
+    if(_node.getParent()) {
+          _node.moveToTop();
+    }
+
+    //_node.show();
   }
-} /**/
+} catch(e) {
+  if(DEBUG) {
+    console.log(e);
+    console.log("Answer was: "+eggAnswer);
+  }
+}
+}
 },
 
 updateIcons: function(egg) {
@@ -581,6 +820,10 @@ ui.icon.images[seqStr] = ui.icon.images[seqStr] || [];
 imageSources.sequences[seqStr].icons.forEach(
   function(src, inx) {
 
+  if(DEBUG) {
+      console.log("Loading icon image: "+src);
+  }
+
   ui.icon.images[seqStr][inx] = new Image();
 
   ui.icon.konvaWrappers[seqStr][inx] = new Konva.Image({
@@ -603,7 +846,9 @@ imageSources.sequences[seqStr].icons.forEach(
         loadCount[seqStr] = loadCount[seqStr] + 1;
         iconMenu.group.add(ui.icon.konvaWrappers[seqStr][inx]);
       //  iconMenu.uiContainer.moveTopBottom();
+        ui.icon.konvaWrappers[seqStr][inx].draw();
         ui.icon.konvaWrappers[seqStr][inx].moveToTop();
+
   };
 
   //iconMenu.group.draw();
@@ -611,9 +856,9 @@ imageSources.sequences[seqStr].icons.forEach(
 
   ychromPos += ((inx + 1) % iconsPerRow) === 0 ? vSpace : 0;
   xchromPos = ((inx + 1) % iconsPerRow) === 0 ? hSpace : xchromPos;
-
-  ui.hideUnusedIcons(inx, seqStr, egg);
-
+    //if(egg) {
+        ui.hideUnusedIcons(inx, seqStr, egg);
+  //  }
   }
 );
 
@@ -623,8 +868,15 @@ imageSources.sequences[seqStr].icons.forEach(
 
 } else {
     ui.icon.konvaWrappers[seqStr].forEach(function(icon, inx) {
+          if(DEBUG) {
+            console.log("Reusing cached icons");
+            console.log(icon);
+          }
+
           icon.show();
-          ui.hideUnusedIcons(inx, seqStr, egg);
+      //  if(egg.next) {
+            ui.hideUnusedIcons(inx, seqStr, egg);
+      //  }
     });
 }
 
@@ -755,13 +1007,12 @@ focus: function(thisEgg, params) {
     scaleY: params.focusOut ? 1 : circleFocusMultiplier,
     onFinish: function() {
         thisEgg.cache();
-
         app.textTween.play();
+
         if(params.onComplete) {
               params.onComplete();
         }
 
-      //  app.tweenIsPlaying = false;
         ui.focusing = true;
     }
   });
@@ -770,7 +1021,6 @@ focus: function(thisEgg, params) {
         iconMenu.setListening(false);
         resetButton.setListening(false);
         undoButton.setListening(false);
-      //  app.tweenIsPlaying = true;
         app.groupTween.play();
 
     }, 50);
@@ -867,22 +1117,6 @@ Konva.Circle.prototype.initEgg = function(params) {
         return this.group;
 };
 
-/*Konva.Circle.prototype.emptyChromos = function() {
-        if(!this.chromos) return false;
-
-        var seq = this.sequence;
-        var chromos = this.chromos;
-        this.chromos.forEach(function(icon, i){
-
-            icon.hide();
-            ui.resetMenuOptions(seq);
-
-            if(chromos && chromos[i]) {
-                delete(chromos[i]);
-            }
-        });
-};*/
-
 Konva.Circle.prototype.isPrecursor = false;
 Konva.Circle.prototype.scrollPageOnDrop = null;
 Konva.Circle.prototype.group = null;
@@ -931,7 +1165,7 @@ var undoButton = new Konva.Rect({
   y: containerHeight - iconHeight / 2,
   width: iconWidth / 2,
   height: iconHeight / 3,
-  fill: containerFill,
+  fill: buttonFillColor,
   stroke: containerStroke,
   strokeWidth: 2,
   name: 'undo',
@@ -943,7 +1177,7 @@ var undoText = new Konva.Text({
   y: containerHeight - (iconHeight / 2) + 15,
     text: 'Undo',
     fontSize: 18,
-     fontFamily: 'Calibri',
+     fontFamily: 'Calibri, verdana, sans-serif',
      fill: buttonLabelColor
 });
 
@@ -952,7 +1186,7 @@ var resetButton = new Konva.Rect({
   y: containerHeight - iconHeight / 2,
   width: iconWidth / 2,
   height: iconHeight / 3,
-  fill: containerFill,
+  fill: buttonFillColor,
   stroke: containerStroke,
   strokeWidth: 2,
   name: 'reset',
@@ -967,7 +1201,7 @@ var resetText = new Konva.Text({
     y: containerHeight - (iconHeight / 2) + 15,
     text: 'Reset',
     fontSize: 18,
-     fontFamily: 'Calibri',
+     fontFamily: 'Calibri, verdana, sans-serif',
      fill: buttonLabelColor,
      opacity: 1
 });
@@ -1100,13 +1334,14 @@ app.currentDragObject = null;
 stage.on("dragstart", function(e){
     e.target.moveTo(tempLayer);
     app.currentDragObject = e.target;
-
-    console.log("Dragging");
-    console.log(app.currentDragObject);
+        if(DEBUG) {
+            console.log("Dragging");
+            console.log(app.currentDragObject);
+        }
     tempLayer.batchDraw();
     staticLayer.batchDraw();
     focusLayer.batchDraw();
-    //
+
 });
 
 var previousShape;
@@ -1203,7 +1438,8 @@ stage.on("dragleave", function(e){
 
 stage.on("dragover", function(e){
   if(e.target.opacity() < interactableThresholdOpacity) return false;
-  console.log("Over "+e.target.name());
+
+    if(DEBUG) {console.log("Over "+e.target.name());}
 
   if(e.target instanceof Konva.Circle) {
         e.target.fill(circleHoverColor);
@@ -1256,7 +1492,7 @@ stage.on("mouseout", function(e){
 
       if(shape && typeof shape.getUIComponentType === 'function') {
           if(shape.getUIComponentType() === 'button') {
-            console.log("out");
+          if(DEBUG) {    console.log("mouseout");}
               shape.fill(buttonFillColor);
               staticLayer.draw();
           }
