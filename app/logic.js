@@ -771,7 +771,7 @@ hideUnusedIcons: function(inx, seqStr, egg) {
       }
     }
 
-      console.log(eggAnswer+" hiding "+inx);
+    if(DEBUG) console.log(eggAnswer+" hiding "+inx);
 
       _node.hide();
     //  _node.setX(5000); //place off stage
