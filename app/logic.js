@@ -1,5 +1,10 @@
-var $ = require('jquery-slim');
+var $ = jQuery = require('jquery');
 require('konva');
+require('bootstrap');
+var jsPDF = require('jspdf');
+var bootbox = require('bootbox');
+
+var DEBUG = false;
 
 var app = { run: function(){
 
@@ -343,38 +348,36 @@ app.sequences = [ null,
 
 var loadCount = [];
 
-var stage = new Konva.Stage({
+ app.stage = new Konva.Stage({
     container: '#container',
     width: width,
     height: height
 });
 
-var stageCenter = stage.width() / 2;
+var stageCenter = app.stage.width() / 2;
 
-var layer = new Konva.Layer({name: 'eggLayer'});
+app.layer = new Konva.Layer({name: 'eggLayer'});
 
-var tempLayer = new Konva.Layer({name: 'dragLayer'});
+app.tempLayer = new Konva.Layer({name: 'dragLayer'});
 
-var staticLayer = new Konva.Layer({name: 'staticLayer'});
+app.staticLayer = new Konva.Layer({name: 'staticLayer'});
 
-var focusLayer = new Konva.Layer({name: 'focusLayer'});
+app.focusLayer = new Konva.Layer({name: 'focusLayer'});
 
 var undoHistory = [];
 
 var DOMLabelWidth = 0; // set with jquery
 var DOMLabelHeight = 0;
 
-var DEBUG = true;
-
 // evaluate dimensions
-var problemPosFormula = stage.width() - (circleDiameter * 5);
+var problemPosFormula = app.stage.width() - (circleDiameter * 5);
 var cctXPos = iconWidth / 4;
 var cctYPos = iconWidth * 1.2;
 var iconHSpacing = iconWidth * 0.6;
 var iconVSpacing = iconHeight * 0.8;
 var containerWidth = (iconWidth * iconsPerRow) * (iconHomeScale - 0.17);
 
-var ui = {
+app.ui = {
 
 setEggLabel: function(i, egg, x, y) {
   if(! textEggLabels[i]) return false;
@@ -392,24 +395,24 @@ setEggLabel: function(i, egg, x, y) {
   egg.group.add(text);
   egg.label = text;
 
-  ui.debugRect(x + textEggLabels[i].x, y + textEggLabels[i].y, text.getWidth(), text.getHeight());
+  app.ui.debugRect(x + textEggLabels[i].x, y + textEggLabels[i].y, text.getWidth(), text.getHeight());
 },
 
 undo: function() {
     var egg = undoHistory[undoHistory.length-1];
 
     if(egg) {
-        ui.clearIconMenu();
+        app.ui.clearIconMenu();
 
         if(egg.chromos.length > 0) {
           var ret = egg.chromos.pop();
-          ui.returnToContainer(ret, iconHomeScale);
+          app.ui.returnToContainer(ret, iconHomeScale);
         }
 
         if(egg.chromos.length === 0) {
                 undoHistory.pop();
 
-                ui.resetMenuOptions(egg);
+                app.ui.resetMenuOptions(egg);
 
                 egg.fill(circleFillColor);
                 egg.opacity(1.0);
@@ -429,21 +432,19 @@ undo: function() {
                 if(egg.prev && !egg.prev.isPrecursor) {
                     egg.prev.opacity(1.0);
                     egg.prev.canswerId = null;
-                    ui.toggleAllIconsDraggable(egg.prev, true);
+                    app.ui.toggleAllIconsDraggable(egg.prev, true);
                 }
                 if(egg.next) {
                     egg.next.opacity(0.4);
                     egg.next.canswerId = null;
-                    ui.toggleAllIconsDraggable(egg.next, false);
+                    app.ui.toggleAllIconsDraggable(egg.next, false);
                 }
 
-              //  ui.updateIcons(egg);
+                app.layer.batchDraw();
 
-                layer.batchDraw();
-
-                ui.focus(egg.next, { focusOut: true,
+                app.ui.focus(egg.next, { focusOut: true,
                                 onComplete: function() {
-                                      ui.focus(egg, {
+                                      app.ui.focus(egg, {
                                             focusOut: false,
                                             reverseScroll: true
                                           });
@@ -467,7 +468,7 @@ debugRect: function(x, y, w, h) {
             height: h + 10
         });
 
-        layer.add(rect);
+        app.layer.add(rect);
    }
 
   return false;
@@ -488,26 +489,26 @@ unPlacedIcon: function(val) {
 },
 
 getIcons: function(node) {
-    node = node || layer;
-    var icons = node.children.filter(ui.isIcon);
+    node = node || app.layer;
+    var icons = node.children.filter(app.ui.isIcon);
     return icons;
 },
 
 getOrphanedIcons: function(node) {
-    node = node || layer;
-    var icons = node.children.filter(ui.isIcon);
+    node = node || app.layer;
+    var icons = node.children.filter(app.ui.isIcon);
   //  console.log(icons);
-    var pi = icons.filter(ui.unPlacedIcon);
+    var pi = icons.filter(app.ui.unPlacedIcon);
     return pi;
 },
 
 allIconsPlaced: function() {
-    return ui.getOrphanedIcons().length === 0;
+    return app.ui.getOrphanedIcons().length === 0;
 },
 
 clearIcons: function(node) {
-    node = node || layer;
-    var icons = node.children.filter(ui.isIcon);
+    node = node || app.layer;
+    var icons = node.children.filter(app.ui.isIcon);
 
     icons.forEach(function(icon) {
         icon.destroy();
@@ -515,12 +516,12 @@ clearIcons: function(node) {
 },
 
 clearIconMenu: function(node) {
-    node = node || staticLayer;
+    node = node || app.staticLayer;
 
-    var icons = node.children.filter(ui.isIcon);
-  //  var orphanedIcons = {values: icons.filter(ui.unPlacedIcon)};
+    var icons = node.children.filter(app.ui.isIcon);
+  //  var orphanedIcons = {values: icons.filter(app.ui.unPlacedIcon)};
 
-    ui.getOrphanedIcons(node).forEach(function(icon) {
+    app.ui.getOrphanedIcons(node).forEach(function(icon) {
         icon.hide();
     });
 
@@ -529,7 +530,7 @@ clearIconMenu: function(node) {
 
 moveIcons: function(layer1, layer2) {
 
-    ui.getOrphanedIcons(layer1).forEach(function(icon)
+    app.ui.getOrphanedIcons(layer1).forEach(function(icon)
       {
         if(DEBUG) {
           console.log('moving icon '+icon.name()+' from '+layer1.name()+'  to '+layer2.name());
@@ -586,11 +587,11 @@ placeInEgg: function(egg, pointerPos, sizeChangeOnDrop) {
               if(! prevEgg.isPrecursor) {
                   prevEgg.opacity(0.4);
 
-                  ui.toggleAllIconsDraggable(prevEgg, false);
+                  app.ui.toggleAllIconsDraggable(prevEgg, false);
               }
 
-              if(ui.allIconsPlaced()) {
-                  ui.toggleAllIconsDraggable(egg, true);
+              if(app.ui.allIconsPlaced()) {
+                  app.ui.toggleAllIconsDraggable(egg, true);
               }
 
               egg.chromos.push(app.currentDragObject);
@@ -605,22 +606,24 @@ placeInEgg: function(egg, pointerPos, sizeChangeOnDrop) {
 
 if(egg) {
     $(egg).trigger('beforeEggTween', { callback: function() {
-          focusLayer.hide();
+          app.focusLayer.hide();
 
           egg.moveToBottom();
-          ui.focus(egg, {focusOut: true,
+          app.ui.focus(egg, {focusOut: true,
                             onComplete: function() {
-                                  focusLayer.show();
-                                    app.lastEggDrop = egg.next || 'finish';
+                                  app.focusLayer.show();
+
                                     if(egg.next) {
 
-                                            ui.updateIcons(egg.next);
-                                            ui.focus(egg.next,
+                                            app.ui.updateIcons(egg.next);
+                                            app.ui.focus(egg.next,
                                               {focusOut: false,
                                               onComplete: function() {
 
                                               }});
                                           egg.next.moveToTop();
+                                    } else {
+                                        app.ui.playEndSequence(app.promptUser);
                                     }
                             }});
         }
@@ -633,19 +636,19 @@ if(egg) {
 scrollPage: function(egg) {
       if(!egg) return false;
 
-      var layerCentre = (layer.y() / 2);
+      var layerCentre = (app.layer.y() / 2);
       var y =  layerCentre < egg.group.y() ? -egg.group.y() / 20 : egg.group.y() / 20;
       y = y * scrollDistance;
 
         app.tween = new Konva.Tween({
-          node: layer,
+          node: app.layer,
           duration: 0.5,
           y: y,
           opacity: 1,
           onFinish: function() {
-              layer.draw();
-              tempLayer.draw();
-              staticLayer.draw();
+              app.layer.draw();
+              app.tempLayer.draw();
+              app.staticLayer.draw();
           }
       });
 
@@ -675,19 +678,19 @@ returnToContainer: function(icon, scaled) {
   icon.setX(icon.getHomePos().x);
   icon.setY(icon.getHomePos().y);
 
-  layer.draw();
-  tempLayer.draw();
-  staticLayer.draw();
+  app.layer.draw();
+  app.tempLayer.draw();
+  app.staticLayer.draw();
 
   if(icon.inEgg) {
     icon.inEgg.chromos.remove(app.currentDragObject);
-    ui.checkForEmptyEgg(icon.inEgg);
+    app.ui.checkForEmptyEgg(icon.inEgg);
   }
 
   icon.setPlaced(false);
 
   if(icon.inEgg && icon.inEgg.prev) {
-      ui.updateIcons(icon.inEgg.prev);
+      app.ui.updateIcons(icon.inEgg.prev);
   }
   delete(icon.inEgg);// = null;
 },
@@ -710,16 +713,16 @@ checkForEmptyEgg: function(egg) {
 },
 
 resetMenuOptions: function(sequence) {
-    ui.updateIcons(sequence);
+    app.ui.updateIcons(sequence);
 },
 icon: {
         images: null,
         konvaWrappers: null,
         init: function() {
-            ui.icon.konvaWrappers = {};
+            app.ui.icon.konvaWrappers = {};
             app.sequences.forEach(function(s) {
               if(s) {
-                  ui.icon.konvaWrappers[String(s)] = [];
+                  app.ui.icon.konvaWrappers[String(s)] = [];
               }
             });
         }
@@ -727,7 +730,7 @@ icon: {
 hideUnusedIcons: function(inx, seqStr, egg) {
 
   var answerId = imageSources.sequences[seqStr].answerIds[inx];
-  ui.icon.konvaWrappers[seqStr][inx].answerId = answerId;
+  app.ui.icon.konvaWrappers[seqStr][inx].answerId = answerId;
 
   if(DEBUG) {
     console.log("Next egg");
@@ -740,7 +743,7 @@ hideUnusedIcons: function(inx, seqStr, egg) {
 
   var eggAnswer = egg.prev ? egg.prev.canswerId : egg.canswerId;
 
-  var _node = ui.icon.konvaWrappers[seqStr][inx];
+  var _node = app.ui.icon.konvaWrappers[seqStr][inx];
 
   _node.show();
 
@@ -788,7 +791,10 @@ hideUnusedIcons: function(inx, seqStr, egg) {
 }
 }
 },
+playEndSequence: function(o) {
 
+    o.onComplete();
+},
 updateIcons: function(egg) {
 var sequence;
 if(typeof egg === 'number') {
@@ -801,21 +807,21 @@ loadCount[seqStr] = 0;
 
 if(! imageSources.sequences[seqStr] ) return false;
 
-if(! ui.icon.konvaWrappers) {
-    ui.icon.init();
+if(! app.ui.icon.konvaWrappers) {
+    app.ui.icon.init();
 }
 
-ui.clearIconMenu(iconMenu.group);
+app.ui.clearIconMenu(iconMenu.group);
 
-if(ui.icon.konvaWrappers[seqStr].length === 0) {
+if(app.ui.icon.konvaWrappers[seqStr].length === 0) {
 
   var xchromPos = 0;
   var ychromPos = 0;
   var vSpace = iconVSpacing;
   var hSpace = cctXPos - iconHSpacing * 0.075;
 
-ui.icon.images = ui.icon.images || {};
-ui.icon.images[seqStr] = ui.icon.images[seqStr] || [];
+app.ui.icon.images = app.ui.icon.images || {};
+app.ui.icon.images[seqStr] = app.ui.icon.images[seqStr] || [];
 
 imageSources.sequences[seqStr].icons.forEach(
   function(src, inx) {
@@ -824,12 +830,12 @@ imageSources.sequences[seqStr].icons.forEach(
       console.log("Loading icon image: "+src);
   }
 
-  ui.icon.images[seqStr][inx] = new Image();
+  app.ui.icon.images[seqStr][inx] = new Image();
 
-  ui.icon.konvaWrappers[seqStr][inx] = new Konva.Image({
+  app.ui.icon.konvaWrappers[seqStr][inx] = new Konva.Image({
         x: xchromPos,
         y: ychromPos,
-        image: ui.icon.images[seqStr][inx],
+        image: app.ui.icon.images[seqStr][inx],
         width: iconWidth * iconHomeScale,
         height: iconHeight * iconHomeScale,
         name: 'chromosome_'+inx,
@@ -837,17 +843,17 @@ imageSources.sequences[seqStr].icons.forEach(
         fill: 'transparent'
   });
 
-  ui.icon.konvaWrappers[seqStr][inx].sequence = sequence;
+  app.ui.icon.konvaWrappers[seqStr][inx].sequence = sequence;
 
-  ui.icon.konvaWrappers[seqStr][inx].setHomePos({x: xchromPos, y: ychromPos});
-  ui.icon.konvaWrappers[seqStr][inx].setUIComponentType('icon');
+  app.ui.icon.konvaWrappers[seqStr][inx].setHomePos({x: xchromPos, y: ychromPos});
+  app.ui.icon.konvaWrappers[seqStr][inx].setUIComponentType('icon');
 
-  ui.icon.images[seqStr][inx].onload = function(e) {
+  app.ui.icon.images[seqStr][inx].onload = function(e) {
         loadCount[seqStr] = loadCount[seqStr] + 1;
-        iconMenu.group.add(ui.icon.konvaWrappers[seqStr][inx]);
+        iconMenu.group.add(app.ui.icon.konvaWrappers[seqStr][inx]);
       //  iconMenu.uiContainer.moveTopBottom();
-        ui.icon.konvaWrappers[seqStr][inx].draw();
-        ui.icon.konvaWrappers[seqStr][inx].moveToTop();
+        app.ui.icon.konvaWrappers[seqStr][inx].draw();
+        app.ui.icon.konvaWrappers[seqStr][inx].moveToTop();
 
   };
 
@@ -857,17 +863,17 @@ imageSources.sequences[seqStr].icons.forEach(
   ychromPos += ((inx + 1) % iconsPerRow) === 0 ? vSpace : 0;
   xchromPos = ((inx + 1) % iconsPerRow) === 0 ? hSpace : xchromPos;
     //if(egg) {
-        ui.hideUnusedIcons(inx, seqStr, egg);
+        app.ui.hideUnusedIcons(inx, seqStr, egg);
   //  }
   }
 );
 
-  ui.icon.images[seqStr].forEach(function(img, inx) {
-      ui.icon.images[seqStr][inx].src = urlBase + imageSources.sequences[seqStr].icons[inx];
+  app.ui.icon.images[seqStr].forEach(function(img, inx) {
+      app.ui.icon.images[seqStr][inx].src = urlBase + imageSources.sequences[seqStr].icons[inx];
   });
 
 } else {
-    ui.icon.konvaWrappers[seqStr].forEach(function(icon, inx) {
+    app.ui.icon.konvaWrappers[seqStr].forEach(function(icon, inx) {
           if(DEBUG) {
             console.log("Reusing cached icons");
             console.log(icon);
@@ -875,7 +881,7 @@ imageSources.sequences[seqStr].icons.forEach(
 
           icon.show();
       //  if(egg.next) {
-            ui.hideUnusedIcons(inx, seqStr, egg);
+            app.ui.hideUnusedIcons(inx, seqStr, egg);
       //  }
     });
 }
@@ -884,13 +890,13 @@ imageSources.sequences[seqStr].icons.forEach(
 //staticLayer.draw();
 
 if(focusedEgg.group.startingPosition && sequence == 1) {
-    ui.focus(focusedEgg);
+    app.ui.focus(focusedEgg);
 }
 },
 focusing: false,
 focus: function(thisEgg, params) {
   if(!thisEgg.group.startingPosition) return false;
-  if(ui.focusing) return false;
+  if(app.ui.focusing) return false;
 
   if(!params) {
       params = {
@@ -909,19 +915,19 @@ focus: function(thisEgg, params) {
   y = params.focusOut ? thisEgg.group.startingPosition.y : focusPositionY;
 
   if(params.focusOut) {
-      thisEgg.group.moveTo(layer);
+      thisEgg.group.moveTo(app.layer);
   } else {
-      thisEgg.group.moveTo(focusLayer);
+      thisEgg.group.moveTo(app.focusLayer);
   }
 
   //if(app.currentDragObject)
   //console.log("Current parent before focus tween "+app.currentDragObject.parent.attrs.name);
 
-  focusLayer.moveToTop();
+  app.focusLayer.moveToTop();
   thisEgg.group.opacity(1);
   thisEgg.group.moveToTop();
 
-  ui.scrollPage(params.reverseScroll ? thisEgg.prev : thisEgg.next);
+  app.ui.scrollPage(params.reverseScroll ? thisEgg.prev : thisEgg.next);
 
   app.safeLabel = null;
 
@@ -959,7 +965,7 @@ focus: function(thisEgg, params) {
 
         }
 
-        ui.focusing = false;
+        app.ui.focusing = false;
 
   };
 /*  app.iconTweens = {};
@@ -1013,7 +1019,7 @@ focus: function(thisEgg, params) {
               params.onComplete();
         }
 
-        ui.focusing = true;
+        app.ui.focusing = true;
     }
   });
 
@@ -1099,19 +1105,24 @@ Konva.Circle.prototype.initEgg = function(params) {
         this.group = new Konva.Group({
               x: params.x,
               y: params.y,
-              name: egg.name() + '_group'
+              name: egg.name() + '_group',
+              id: egg.name() + '_group'
         });
 
+        if(DEBUG) {
+          console.log("added");
+          console.log(egg.name());
+        }
         this.group.startingPosition = {x: params.x, y: params.y};
         if(this.isPrecursor) {
-          staticLayer.add(this.group);
+          app.staticLayer.add(this.group);
         } else {
-          layer.add(this.group);
+          app.layer.add(this.group);
         }
         this.group.add(egg);
 
         $(this).on("beforeEggTween", function(e, o){
-            $(stage).trigger('touchEgg', { egg: e.target, callback: o.callback });
+            $(app.stage).trigger('touchEgg', { egg: e.target, callback: o.callback });
         });
 
         return this.group;
@@ -1126,7 +1137,7 @@ Konva.Text.prototype.startingPosition = null;
 }
 };
 
-ui.setPrototypes();
+app.ui.setPrototypes();
 
 app.sequences.forEach(function(el, key) {
   if(el !== null) {
@@ -1219,7 +1230,7 @@ iconMenu.group.add(resetText);
 
 resetText.setListening(false);
 
-staticLayer.add(iconMenu.group);
+app.staticLayer.add(iconMenu.group);
 iconMenu.setListening(false);
 
 var setPrecursor = function(pX, pY, i) {
@@ -1236,7 +1247,7 @@ var setPrecursor = function(pX, pY, i) {
       });
 
       precursor.setUIComponentType('stillImage');
-      staticLayer.add(precursor);
+      app.staticLayer.add(precursor);
       };
 };
     // setup egg interface
@@ -1288,6 +1299,7 @@ var setPrecursor = function(pX, pY, i) {
             scaleX: 1 / circleFocusMultiplier,
             scaleY: 1 / circleFocusMultiplier,
             name : 'egg_' + i,
+            id: 'egg_' + i,
             opacity: opacity,
             fill: circleDropColor,
         });
@@ -1297,7 +1309,7 @@ var setPrecursor = function(pX, pY, i) {
         egg.scrollPageOnDrop = 'down';
 
         egg.initEgg({next: null, prev:  previousEgg, chromos: [], x: x, y: y});
-        ui.setEggLabel(i, egg, 0, 0);
+        app.ui.setEggLabel(i, egg, 0, 0);
 
         if(previousEgg && egg) {
           previousEgg.next = egg;
@@ -1318,38 +1330,56 @@ var setPrecursor = function(pX, pY, i) {
 
 precursorImg.src = urlBase + imageSources.precursor;
 
-ui.updateIcons(1);
-//ui.focus(focusedEgg);
+app.ui.updateIcons(1);
+//app.ui.focus(focusedEgg);
 
-stage.add(staticLayer, layer, focusLayer, tempLayer);
+app.stage.add(app.staticLayer, app.layer, app.focusLayer, app.tempLayer);
 
 
-layer.setListening(false);
-layer.children.forEach(
+app.layer.setListening(false);
+app.layer.children.forEach(
   function(n) {
       n.opacity(0.2);
 });
 
 app.currentDragObject = null;
-stage.on("dragstart", function(e){
-    e.target.moveTo(tempLayer);
+app.stage.on("dragstart", function(e){
+    e.target.moveTo(app.tempLayer);
     app.currentDragObject = e.target;
         if(DEBUG) {
             console.log("Dragging");
             console.log(app.currentDragObject);
         }
-    tempLayer.batchDraw();
-    staticLayer.batchDraw();
-    focusLayer.batchDraw();
+    app.tempLayer.batchDraw();
+    app.staticLayer.batchDraw();
+    app.focusLayer.batchDraw();
 
 });
 
-var previousShape;
-stage.on("dragmove", function(evt){
+app.promptUser = {
+  onComplete: function() {
+      var confirmed = bootbox.confirm("Save your work as a PDF or return to the demonstration?",
+      function(confirmed) {
+          if(confirmed === true) {
+              $("#container").trigger('docReady');
+          } else {
+              app.layer.scaleX(1.0);
+              app.layer.scaleY(1.0);
+              app.layer.y(app.prevLayerY);
+              app.staticLayer.show();
+              app.focusLayer.show();
+              app.tempLayer.show();
+          }
+      });
+  }
+};
 
-    var pos = stage.getPointerPosition();
-    var shape = focusLayer.getIntersection(pos);
-    tempLayer.moveToTop();
+var previousShape;
+app.stage.on("dragmove", function(evt){
+
+    var pos = app.stage.getPointerPosition();
+    var shape = app.focusLayer.getIntersection(pos);
+    app.tempLayer.moveToTop();
     if (previousShape && shape) {
         if (previousShape !== shape) {
             // leave from old targer
@@ -1391,9 +1421,9 @@ stage.on("dragmove", function(evt){
 
 
 });
-stage.on("dragend", function(e){
-    var pos = stage.getPointerPosition();
-    var shape = focusLayer.getIntersection(pos);
+app.stage.on("dragend", function(e){
+    var pos = app.stage.getPointerPosition();
+    var shape = app.focusLayer.getIntersection(pos);
 
     if(shape) {
       if(shape.opacity() === 1.0) {
@@ -1418,15 +1448,15 @@ stage.on("dragend", function(e){
   }
 }
 
-  ui.returnToContainer(e.target, iconHomeScale);
+  app.ui.returnToContainer(e.target, iconHomeScale);
 });
 
-stage.on("dragenter", function(e){
+app.stage.on("dragenter", function(e){
     if(e.target.opacity < interactableThresholdOpacity) return false;
 
 });
 
-stage.on("dragleave", function(e){
+app.stage.on("dragleave", function(e){
   if(e.target.opacity < interactableThresholdOpacity) return false;
 
   if(e.target instanceof Konva.Circle) {
@@ -1436,7 +1466,7 @@ stage.on("dragleave", function(e){
   }
 });
 
-stage.on("dragover", function(e){
+app.stage.on("dragover", function(e){
   if(e.target.opacity() < interactableThresholdOpacity) return false;
 
     if(DEBUG) {console.log("Over "+e.target.name());}
@@ -1445,31 +1475,31 @@ stage.on("dragover", function(e){
         e.target.fill(circleHoverColor);
       //  text.text('dragover ' + e.target.name());
 
-        focusLayer.draw();
+        app.focusLayer.draw();
   }
 });
 
-stage.on("drop", function(e){
-  var pointerPos = stage.getPointerPosition();
+app.stage.on("drop", function(e){
+  var pointerPos = app.stage.getPointerPosition();
   if(e.target.opacity() !== 1.0) {
-      ui.returnToContainer(app.currentDragObject, iconHomeScale);
+      app.ui.returnToContainer(app.currentDragObject, iconHomeScale);
       return;
   }
 
   if(e.target instanceof Konva.Circle) {
-        if(! ui.placeInEgg(e.target, pointerPos)) {
-            ui.returnToContainer(app.currentDragObject, iconHomeScale);
+        if(! app.ui.placeInEgg(e.target, pointerPos)) {
+            app.ui.returnToContainer(app.currentDragObject, iconHomeScale);
         }
   }
 });
 
-stage.on("touchstart mouseover", function(e){
+app.stage.on("touchstart mouseover", function(e){
   //  console.log("fired mo ");
       if(e.target.opacity() < interactableThresholdOpacity) {
           return false;
       }
-      var pos = stage.getPointerPosition();
-      var shape = staticLayer.getIntersection(pos);
+      var pos = app.stage.getPointerPosition();
+      var shape = app.staticLayer.getIntersection(pos);
 
       if(shape && typeof shape.getUIComponentType === 'function') {
           if(shape.getUIComponentType() === 'button') {
@@ -1479,12 +1509,12 @@ stage.on("touchstart mouseover", function(e){
                     shape.fill(buttonHoverColor);
               }
 
-              staticLayer.draw();
+              app.staticLayer.draw();
           }
       }
 });
 
-stage.on("mouseout", function(e){
+app.stage.on("mouseout", function(e){
       if(e.target.opacity() < interactableThresholdOpacity) {
           return false;
       }
@@ -1494,11 +1524,11 @@ stage.on("mouseout", function(e){
           if(shape.getUIComponentType() === 'button') {
           if(DEBUG) {    console.log("mouseout");}
               shape.fill(buttonFillColor);
-              staticLayer.draw();
+              app.staticLayer.draw();
           }
       }
 });
-stage.on("mousedown", function(e){
+app.stage.on("mousedown", function(e){
   if(e.target.opacity() < interactableThresholdOpacity) {
       return false;
   }
@@ -1511,7 +1541,7 @@ stage.on("mousedown", function(e){
           }
       }
 });
-stage.on("touchend mouseup", function(e){
+app.stage.on("touchend mouseup", function(e){
       if(e.target.opacity() < interactableThresholdOpacity) {
           return false;
       }
@@ -1522,20 +1552,20 @@ stage.on("touchend mouseup", function(e){
               var name = shape.name();
               switch(name) {
                     case 'undo':
-                        ui.undo();
+                        app.ui.undo();
                     break;
                     case 'reset':
                         window.location.reload();
               }
 
               shape.fill(buttonFillColor);
-              staticLayer.draw();
+              app.staticLayer.draw();
           }
       }
 });
 
 // jquery events
-$(stage).on('touchEgg', function(e, args){
+$(app.stage).on('touchEgg', function(e, args){
 		$("#labelme").css({left: args.egg.group.x(), top: args.egg.group.y()}).show();
 
     $("#labelme input").on('change', function(e) {
@@ -1558,9 +1588,40 @@ DOMLabelWidth = $('#labelme').width();
 DOMLabelHeight = $('#labelme').height();
 }};
 
+app.prevLayerY = 0;
+/* convert output to PDF and download */
+$(document).on('docReady', "#container", function() {
 
+  app.layer.opacity(1.0);
+  app.layer.moveToTop();
+  app.staticLayer.hide();
+  app.focusLayer.hide();
+  app.tempLayer.hide();
+
+  for(var i = 0; i < 19; i++) {
+      var egg = app.stage.find("#egg_"+i)[0];
+      egg.opacity(1.0);
+      egg.group.opacity(1.0);
+      egg.group.moveToTop();
+  }
+  app.layer.scaleX(0.6);
+  app.layer.scaleY(0.6);
+  app.prevLayerY = app.layer.y();
+  app.layer.y(0);
+
+  app.layer.draw();
+
+  var canv = app.layer.getCanvas();
+  var imgData = canv.toDataURL('image/png');
+  var pdf = new jsPDF('p','px','a4',false);
+  pdf.addImage(imgData, 'PNG', 60, 0, 645, 600);
+  pdf.save('download.pdf');
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     app.run();
 
+  if(DEBUG) {
+    app.ui.playEndSequence(app.promptUser);
+  }
 });
