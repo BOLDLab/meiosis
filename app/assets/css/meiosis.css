@@ -1,13 +1,9 @@
 body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: none;
 
-    min-width: 645px;
-    min-height: 645px;
-    width: 605px;
-    height: 605px;
-    font-family: 'Calibri', verdana, sans-serif;
+    font-family: 'Corbel', verdana, sans-serif;
 }
 
 #desc {
@@ -22,26 +18,43 @@ iframe#konva_portal {
   height: 605px;
   border: thick solid 'red';
 }
+
+.container.well {
+  width: 620px;
+  height: 800px;
+  margin: 0 auto;
+  padding: 1em;
+}
 #container {
-  max-width: 600px;
-  max-height: 645px;
-  width: 645px;
-  height: 620px;
+  max-width: 635px;
+  max-height: 665px;
+  width: 635px;
+  height: 640px;
   border: thin solid #ddd;
   overflow: hidden;
   background-color: #F7DFAE;
   margin: 1em;
 }
+#bs {
+  height: 700px;
+  width: 660px;
+  margin: 0 auto;
+  display: block;
+}
 #labelme {
-     position: absolute;
-    top: 10;
-    left: 10;
-    width: 9em;
+    position: absolute;
+    width: 150px;
     border: thin solid black;
     background: #DDD;
-    opacity: 0.9;
+    font-size: 12pt;
+    text-align:left;
     display: none;
+    padding-left: 1em;
 }
+#labelme input {
+    margin-right: 0.5em;
+}
+
 h2 {
   margin:1em;
   font-size: 20pt;

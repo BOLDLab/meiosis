@@ -8,6 +8,8 @@ var DEBUG = false;
 
 var app = { run: function(){
 
+app.sizeChangeOnDrop = 3.2;
+
 var width = 800;
 var height = 610;
 var circleDiameter = 90;
@@ -19,7 +21,7 @@ var circleDropColor = '#FFF';//'#DAD7C5';
 var circleHoverColor = '#EEE';//'rgb(117,128,194)';
 var circleStrokeColor = 'black';
 
-var circleFocusMultiplier = 2.3;
+var circleFocusMultiplier = 4.0;
 
 var buttonLabelColor = '#F7DFAE';
 var buttonFillColor = '#467D7D';
@@ -37,7 +39,14 @@ var iconsPerRow = 3;
 
 var containerFill = '#FFF1D6';//'rgb(201,200,184)';
 var containerStroke = 'black';
-var containerHeight = 400;
+var containerHeight = 160;
+var containerX = 0;
+var containerY = 280;
+var containerWidth = 530;
+
+var precursorX = 28;
+var precursorY = 10;
+
 //- (iconWidth * 0.25);
 var rightLabelOffset = - (circleSpace / 2);
 var leftLabelOffset = - (circleSpace);
@@ -45,8 +54,8 @@ var scrollDistance = 10;
 var urlBase = '';//'/test/meiosis/'
 
 var focusedEgg = null;
-var focusPositionX = 460;
-var focusPositionY = 255;
+var focusPositionX = 410;
+var focusPositionY = 185;
 
 var textEggLabels = [ {x: -67, y: (circleSpace / 2), text: 'Precursor Germ cells'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase I'},
@@ -371,11 +380,11 @@ var DOMLabelHeight = 0;
 
 // evaluate dimensions
 var problemPosFormula = app.stage.width() - (circleDiameter * 5);
-var cctXPos = iconWidth / 4;
-var cctYPos = iconWidth * 1.2;
+var cctXPos = containerX;
+var cctYPos = containerY;
 var iconHSpacing = iconWidth * 0.6;
 var iconVSpacing = iconHeight * 0.8;
-var containerWidth = (iconWidth * iconsPerRow) * (iconHomeScale - 0.17);
+//var containerWidth = (iconWidth * iconsPerRow) * (iconHomeScale - 0.17);
 
 app.ui = {
 
@@ -552,26 +561,11 @@ toggleAllIconsDraggable: function(egg, draggable) {
   });
 },
 
-placeInEgg: function(egg, pointerPos, sizeChangeOnDrop) {
-    sizeChangeOnDrop = sizeChangeOnDrop || 0.8;
-
+placeInEgg: function(egg, pointerPos) {
     var w = app.currentDragObject.getWidth();
     var h = app.currentDragObject.getHeight();
 
     egg.canswerId = app.currentDragObject.answerId;
-
-    if(sizeChangeOnDrop) {
-        if(w > iconWidth) {
-            w = iconWidth;
-        }
-
-        if(h > iconHeight) {
-            h = iconHeight;
-        }
-
-        w = w * sizeChangeOnDrop;
-        h = h * sizeChangeOnDrop;
-    }
 
     app.currentDragObject.setWidth(w);
     app.currentDragObject.setHeight(h);
@@ -609,6 +603,25 @@ if(egg) {
           app.focusLayer.hide();
 
           egg.moveToBottom();
+          //app.currentDragObject.setScaleX(0.2);
+        //  app.currentDragObject.setScaleY(0.2);
+        app.currentDragObject.sizeChanged = false;
+          app.chromTween = new Konva.Tween({
+            node: app.currentDragObject,
+            duration: 0.1,
+            x: -55,
+            y: -55,
+            opacity: 1,
+            scaleX: 0.9,
+            scaleY: 0.9,
+            onFinish: function() {
+                app.layer.batchDraw();
+                app.tempLayer.batchDraw();
+                app.staticLayer.batchDraw();
+            }
+          });
+
+          app.chromTween.play();
           app.ui.focus(egg, {focusOut: true,
                             onComplete: function() {
                                   app.focusLayer.show();
@@ -678,7 +691,7 @@ returnToContainer: function(icon, scaled) {
   icon.setX(icon.getHomePos().x);
   icon.setY(icon.getHomePos().y);
 
-  app.layer.draw();
+  app.layer.batchDraw();
   app.tempLayer.draw();
   app.staticLayer.draw();
 
@@ -692,6 +705,24 @@ returnToContainer: function(icon, scaled) {
   if(icon.inEgg && icon.inEgg.prev) {
       app.ui.updateIcons(icon.inEgg.prev);
   }
+
+  app.currentDragObject.sizeChanged = false;
+
+  app.chromTween = new Konva.Tween({
+    node: app.currentDragObject,
+    duration: 0.3,
+    opacity: 1,
+    scaleX: 1,
+    scaleY: 1,
+    onFinish: function() {
+        app.layer.batchDraw();
+        app.tempLayer.batchDraw();
+        app.staticLayer.batchDraw();
+    }
+  });
+
+  app.chromTween.play();
+
   delete(icon.inEgg);// = null;
 },
 
@@ -815,10 +846,10 @@ app.ui.clearIconMenu(iconMenu.group);
 
 if(app.ui.icon.konvaWrappers[seqStr].length === 0) {
 
-  var xchromPos = 0;
-  var ychromPos = 0;
-  var vSpace = iconVSpacing;
-  var hSpace = cctXPos - iconHSpacing * 0.075;
+  var xchromPos = 12;
+  var ychromPos = 163;
+  var vSpace = 0; //iconVSpacing;
+  var hSpace = 0;//cctXPos - iconHSpacing * 0.075;
 
 app.ui.icon.images = app.ui.icon.images || {};
 app.ui.icon.images[seqStr] = app.ui.icon.images[seqStr] || [];
@@ -851,9 +882,15 @@ imageSources.sequences[seqStr].icons.forEach(
   app.ui.icon.images[seqStr][inx].onload = function(e) {
         loadCount[seqStr] = loadCount[seqStr] + 1;
         iconMenu.group.add(app.ui.icon.konvaWrappers[seqStr][inx]);
-      //  iconMenu.uiContainer.moveTopBottom();
         app.ui.icon.konvaWrappers[seqStr][inx].draw();
         app.ui.icon.konvaWrappers[seqStr][inx].moveToTop();
+
+        app.ui.icon.konvaWrappers[seqStr][inx].on('mouseover', function() {
+               document.body.style.cursor = 'move';
+        });
+        app.ui.icon.konvaWrappers[seqStr][inx].on('mouseout', function() {
+               document.body.style.cursor = 'default';
+        });
 
   };
 
@@ -1080,6 +1117,8 @@ Konva.Image.prototype.setUIComponentType = function(type) {
 Konva.Image.prototype.getUIComponentType = function() {
         return this.uiComponentType;
 };
+
+Konva.Image.prototype.sizeChanged = false;
 Konva.Node.prototype.sequence = 0;
 // button functions
 Konva.Rect.prototype.setUIComponentType = function(type) {
@@ -1156,8 +1195,8 @@ var text = new Konva.Text({
 
 // setup chromosome container
 var iconMenu = new Konva.Rect({
-  x: 0,
-  y: 0,
+  x: cctXPos + 25,
+  y: cctYPos - 113,
       width: containerWidth,
       height: containerHeight,
       fill: containerFill,
@@ -1172,49 +1211,61 @@ iconMenu.uiContainer({
 });
 
 var undoButton = new Konva.Rect({
-  x: containerWidth / 6,
-  y: containerHeight - iconHeight / 2,
+  x: containerX + containerWidth - (iconWidth / 2),
+  y: containerY,
   width: iconWidth / 2,
   height: iconHeight / 3,
   fill: buttonFillColor,
   stroke: containerStroke,
   strokeWidth: 2,
   name: 'undo',
-  type: 'icon'
+  type: 'icon',
+});
+
+undoButton.on('mouseover', function() {
+       document.body.style.cursor = 'pointer';
+});
+undoButton.on('mouseout', function() {
+       document.body.style.cursor = 'default';
 });
 
 var undoText = new Konva.Text({
-  x: containerWidth / 6 + iconWidth * 0.1,
-  y: containerHeight - (iconHeight / 2) + 15,
+  x: containerX + containerWidth - (iconWidth / 2) + 15,
+  y: containerY + 13,
     text: 'Undo',
     fontSize: 18,
-     fontFamily: 'Calibri, verdana, sans-serif',
+     fontFamily: "'Corbel', verdana, sans-serif",
      fill: buttonLabelColor
 });
 
 var resetButton = new Konva.Rect({
-  x: containerWidth / 6 + iconWidth * 0.6,
-  y: containerHeight - iconHeight / 2,
+  x: containerX + containerWidth - (iconWidth + 3),
+  y: containerY,
   width: iconWidth / 2,
   height: iconHeight / 3,
   fill: buttonFillColor,
   stroke: containerStroke,
   strokeWidth: 2,
   name: 'reset',
-  opacity: 1,
 });
 
 resetButton.setUIComponentType('button');
 undoButton.setUIComponentType('button');
 
+resetButton.on('mouseover', function() {
+       document.body.style.cursor = 'pointer';
+});
+resetButton.on('mouseout', function() {
+       document.body.style.cursor = 'default';
+});
+
 var resetText = new Konva.Text({
-    x: containerWidth / 6 + iconWidth * 0.7,
-    y: containerHeight - (iconHeight / 2) + 15,
+    x: containerX + containerWidth - (iconWidth + 3) + 15,
+    y: containerY + 13,
     text: 'Reset',
     fontSize: 18,
-     fontFamily: 'Calibri, verdana, sans-serif',
+     fontFamily: "'Corbel', verdana, sans-serif",
      fill: buttonLabelColor,
-     opacity: 1
 });
 
 iconMenu.group.add(undoButton);
@@ -1237,8 +1288,8 @@ var setPrecursor = function(pX, pY, i) {
       precursorImg.onload = function() {
 
       precursor = new Konva.Image({
-            x: pX - (circleDiameter / 2),
-            y: pY - (circleDiameter / 2),
+            x: precursorX,
+            y: precursorY,
             image: precursorImg,
             width: iconWidth / 1.7,
             height: iconHeight / 1.7,
@@ -1263,7 +1314,7 @@ var setPrecursor = function(pX, pY, i) {
         var y;
 
         if(i === 0) {
-              x = problemPosFormula - (circleDiameter * 2);
+              x = 28 + (circleDiameter / 2);
               y = circleDiameter + topOffset;
 
               var pX = x; // create local instance
@@ -1466,12 +1517,26 @@ app.stage.on("dragleave", function(e){
   }
 });
 
+
+
 app.stage.on("dragover", function(e){
   if(e.target.opacity() < interactableThresholdOpacity) return false;
 
-    if(DEBUG) {console.log("Over "+e.target.name());}
+  if(DEBUG) {console.log("Over "+e.target.name());}
+
+  if(app.sizeChangeOnDrop && !app.currentDragObject.sizeChanged) {
+      app.currentDragObject.setScaleX(app.currentDragObject.scaleX() * app.sizeChangeOnDrop);
+      app.currentDragObject.setScaleY(app.currentDragObject.scaleY() * app.sizeChangeOnDrop);
+
+      app.currentDragObject.sizeChanged = true;
+
+  }
+
+  app.currentDragObject.setX(app.stage.getPointerPosition().x - ((app.currentDragObject.width() / 2) * app.sizeChangeOnDrop));
+  app.currentDragObject.setY(app.stage.getPointerPosition().y - ((app.currentDragObject.height() / 2) * app.sizeChangeOnDrop));
 
   if(e.target instanceof Konva.Circle) {
+
         e.target.fill(circleHoverColor);
       //  text.text('dragover ' + e.target.name());
 
@@ -1481,6 +1546,8 @@ app.stage.on("dragover", function(e){
 
 app.stage.on("drop", function(e){
   var pointerPos = app.stage.getPointerPosition();
+  var sizeRevert = false;
+
   if(e.target.opacity() !== 1.0) {
       app.ui.returnToContainer(app.currentDragObject, iconHomeScale);
       return;
@@ -1575,14 +1642,12 @@ $(app.stage).on('touchEgg', function(e, args){
         }
 
         var str = args.egg.label.text();
-        var type = $(e.target).closest('label').text();
+        var type = $(e.target).prop('id');
         args.egg.label.text(str + "\n("+type+")");
         args.callback();
         $("#labelme").hide().find('input').prop('checked', false).off('change');
     });
 });
-
-
 
 DOMLabelWidth = $('#labelme').width();
 DOMLabelHeight = $('#labelme').height();
@@ -1604,18 +1669,34 @@ $(document).on('docReady', "#container", function() {
       egg.group.opacity(1.0);
       egg.group.moveToTop();
   }
-  app.layer.scaleX(0.6);
-  app.layer.scaleY(0.6);
-  app.prevLayerY = app.layer.y();
-  app.layer.y(0);
 
+  app.prevLayerY = app.layer.y();
+  app.layer.y(-135);
+  app.layer.x(-150);
+  app.layer.scaleX(1.25);
+  app.layer.scaleY(1.25);
   app.layer.draw();
 
   var canv = app.layer.getCanvas();
-  var imgData = canv.toDataURL('image/png');
+  var imgData1 = canv.toDataURL('image/png');
+
+  app.layer.x(-60);
+  app.layer.y(-640);
+  app.layer.draw();
+
+  app.layer.scaleX(1.2);
+  app.layer.scaleY(1.2);
+  app.layer.draw();
+  var imgData2 = canv.toDataURL('image/png');
+
   var pdf = new jsPDF('p','px','a4',false);
-  pdf.addImage(imgData, 'PNG', 60, 0, 645, 600);
-  pdf.save('download.pdf');
+
+  pdf.addImage(imgData1, 'PNG', 0, 0, 645, 600);
+  pdf.addPage();
+  pdf.addImage(imgData2, 'PNG', 0, 0, 645, 600);
+  pdf.save('meiosis.pdf');
+  app.layer.hide();
+  bootbox.alert("Thank you. The PDF is in your downloads folder. Click OK to complete another exercise.", function() { document.location.reload();});
 });
 
 document.addEventListener('DOMContentLoaded', function() {
