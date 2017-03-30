@@ -1,8 +1,5 @@
-var $ = jQuery = require('jquery');
 require('konva');
 require('bootstrap');
-var jsPDF = require('jspdf');
-var bootbox = require('bootbox');
 
 var DEBUG = false;
 
@@ -1651,6 +1648,9 @@ $(app.stage).on('touchEgg', function(e, args){
 
 DOMLabelWidth = $('#labelme').width();
 DOMLabelHeight = $('#labelme').height();
+
+introJs.introJs().start();
+//$(".introjs-overlay").css({opacity: '0.0'});
 }};
 
 app.prevLayerY = 0;

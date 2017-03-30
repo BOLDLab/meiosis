@@ -59,3 +59,47 @@ h2 {
   margin:1em;
   font-size: 20pt;
 }
+.meiosis-intro-overlay {
+  position: relative;
+  min-width: 100%;
+}
+
+.introjs-helperLayer {
+  background-color: transparent !important;
+  margin: 0 auto;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8);
+}
+.introjs-overlay {
+  background-color: blue;
+  opacity: 0 !important;
+}
+.intro-js-item {
+  position: absolute;
+  background-color: transparent;
+}
+.precursor {
+  width: 145px;
+  height: 130px;
+  left: 10px;
+  top: 80px;
+}
+.cell-box {
+  width: 600px;
+  height: 175px;
+  left: 10px;
+  top: 520px;
+}
+.drop-area {
+  width: 400px;
+  height: 450px;
+  left: 230px;
+  top: 80px;
+}
+.hd_example {
+  display: inline;
+  float: right;
+  background-image: url(http://localhost:3333/img/hapdip.png);
+  width: 180px;
+  height: 65px;
+  background-repeat: no-repeat;
+}

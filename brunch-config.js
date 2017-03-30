@@ -2,20 +2,36 @@ module.exports = {
   modules: {
     autoRequire: {
       // outputFileName : [ entryModule ]
-        'js/app.js' : ['logic']
+        'js/app.js' : ['logic'],
     }
- },
- files: {
+  },
+  npm: {
+   globals: {
+      $: 'jquery',
+      jQuery:'jquery',
+      introJs: 'intro.js',
+      jsPDF: 'jspdf',
+      bootbox: 'bootbox'
+    },
+    styles: {
+        "intro.js": ['introjs.css'],
+        "bootstrap-css": ['lib/modals.css', 'lib/buttons.css', 'lib/wells.css', 'lib/scaffolding.css', 'lib/code.css', 'lib/normalize.css', 'lib/grid.css', "lib/forms.css"]
+    }
+  },
+  files: {
   javascripts:
        {
          joinTo:{
           'js/app.js': /^app/,
-          'js/vendor.js': /node_modules/
+          'js/vendor.js': /^node_modules/,
         }
-  },/*,
-  stylesheets: {joinTo: 'app.css'},
-    //   templates: {joinTo: 'app.js'}
- */},
+      },
+      stylesheets: {
+        joinTo: { 'css/app.css' : /^app/,
+                'css/vendor.css' : /^node_modules/,
+              }
+    },
+  },
  plugins: {
     uglify: {
       mangle: true,

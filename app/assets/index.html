@@ -3,26 +3,35 @@
 <head>
     <meta charset="utf-8">
     <title>Meiosis Trainer</title>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href="css/meiosis.css" rel="stylesheet" type="text/css">
+
+      <link href="css/vendor.css" rel="stylesheet" type="text/css">
+    <link href="css/app.css" rel="stylesheet" type="text/css">
     <script src="js/vendor.js"></script>
     <script src="js/app.js"></script>
+
 </head>
 
 <body>
-  <div class='container-fluid' style='max-width: 710px'>
-    <div class='row well'>
-      <div class='col-md-12'>
+
+  <div class="container-fluid well" style="max-width: 710px; height: 750px" >
+    <div class="meiosis-intro-overlay">
+        <div class="precursor intro-js-item" data-intro="These are the the precursor cells inside the egg after fertilisation. Check this carefully for which chromosomes you are starting with.">
+        </div>
+        <div class="cell-box intro-js-item" data-intro="This is the cell box, drag cell combinations from the cell box to the large egg above." data-step="2">
+        </div>
+        <div class="drop-area intro-js-item" data-intro="This is the first egg, <div class='hd_example'></div>drop the chromosomes from the cell box to begin meiosis. You will be asked if the cell is haploid or diploid. " data-step="3">
+        </div>
+    </div>
+    <div class="row intro-js-item" data-intro="You can see the different stages of meiosis scrolling up in the background as you work through the exercise. Once you have completed all the stages, you will be prompted to download a PDF." data-step="4">
+      <div class="col-md-12">
         <h1>Meiosis</h1>
 
-        <div id="container" class="well"></div>
+        <div id="container" style="height: 100%"></div>
 
       </div>
     </div>
-    <div class='row'>
 
-    </div>
-    <div id="labelme">
+  <div id="labelme">
     <div class="form-check">
       <label class="form-check-label" for="hap">
       <input type="radio" class="form-check-input" name="hapdip" id="hap">Haploid<em>&nbsp;OR</em></label>
