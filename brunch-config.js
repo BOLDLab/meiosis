@@ -15,7 +15,8 @@ module.exports = {
     },
     styles: {
         "intro.js": ['introjs.css'],
-        "bootstrap-css": ['lib/modals.css', 'lib/buttons.css', 'lib/wells.css', 'lib/scaffolding.css', 'lib/code.css', 'lib/normalize.css', 'lib/grid.css', "lib/forms.css"]
+        "bootstrap-css": ['lib/modals.css', 'lib/buttons.css', 'lib/wells.css', 'lib/scaffolding.css', 'lib/code.css', 'lib/normalize.css', 'lib/grid.css', "lib/forms.css",
+        'lib/navs.css', 'lib/close.css']
     }
   },
   files: {

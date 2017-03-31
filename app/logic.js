@@ -425,8 +425,8 @@ undo: function() {
 
                 var str = egg.label.text();
 
-                var dipi = str.indexOf("\n(Diploid)");
-                var hapi = str.indexOf("\n(Haploid)");
+                var dipi = str.indexOf("\n(hap)");
+                var hapi = str.indexOf("\n(dip)");
 
                 var pos = dipi > 0 ? dipi : hapi;
 
@@ -982,8 +982,8 @@ focus: function(thisEgg, params) {
               app.safeLabel.moveTo(thisEgg.group);
           }
             iconMenu.setListening(true);
-            resetButton.setListening(true);
-            undoButton.setListening(true);
+          //  resetButton.setListening(true);
+          //  undoButton.setListening(true);
           //  app.tweenIsPlaying = false;
 
           delete(app.eggTween);
@@ -1059,8 +1059,8 @@ focus: function(thisEgg, params) {
 
     app.thread = setTimeout(function() {
         iconMenu.setListening(false);
-        resetButton.setListening(false);
-        undoButton.setListening(false);
+      //  resetButton.setListening(false);
+      //  undoButton.setListening(false);
         app.groupTween.play();
 
     }, 50);
@@ -1226,7 +1226,7 @@ undoButton.on('mouseout', function() {
        document.body.style.cursor = 'default';
 });
 
-var undoText = new Konva.Text({
+/*var undoText = new Konva.Text({
   x: containerX + containerWidth - (iconWidth / 2) + 15,
   y: containerY + 13,
     text: 'Undo',
@@ -1276,7 +1276,7 @@ undoText.setListening(false);
 iconMenu.group.add(resetButton);
 iconMenu.group.add(resetText);
 
-resetText.setListening(false);
+resetText.setListening(false);*/
 
 app.staticLayer.add(iconMenu.group);
 iconMenu.setListening(false);
@@ -1406,7 +1406,7 @@ app.stage.on("dragstart", function(e){
 
 app.promptUser = {
   onComplete: function() {
-      var confirmed = bootbox.confirm("Save your work as a PDF or return to the demonstration?",
+      var confirmed = bootbox.confirm("Save your work as a PDF [OK] or return to the demonstration [Cancel]?",
       function(confirmed) {
           if(confirmed === true) {
               $("#container").trigger('docReady');
@@ -1605,7 +1605,7 @@ app.stage.on("mousedown", function(e){
           }
       }
 });
-app.stage.on("touchend mouseup", function(e){
+/*app.stage.on("touchend mouseup", function(e){
       if(e.target.opacity() < interactableThresholdOpacity) {
           return false;
       }
@@ -1626,7 +1626,7 @@ app.stage.on("touchend mouseup", function(e){
               app.staticLayer.draw();
           }
       }
-});
+});*/
 
 // jquery events
 $(app.stage).on('touchEgg', function(e, args){
@@ -1649,11 +1649,12 @@ $(app.stage).on('touchEgg', function(e, args){
 DOMLabelWidth = $('#labelme').width();
 DOMLabelHeight = $('#labelme').height();
 
-introJs.introJs().start();
-//$(".introjs-overlay").css({opacity: '0.0'});
+
+
 }};
 
 app.prevLayerY = 0;
+
 /* convert output to PDF and download */
 $(document).on('docReady', "#container", function() {
 
@@ -1697,12 +1698,32 @@ $(document).on('docReady', "#container", function() {
   pdf.save('meiosis.pdf');
   app.layer.hide();
   bootbox.alert("Thank you. The PDF is in your downloads folder. Click OK to complete another exercise.", function() { document.location.reload();});
-});
-
-document.addEventListener('DOMContentLoaded', function() {
+}).on("click", "#tour", function(e) {
+    e.preventDefault();
+    $("#homeMenu").hide();
+    $("body h1").addClass("h1_w_controls");
+    $("#container, .meiosis-intro").show();
     app.run();
+    function show_buttons() {
+        $(".btn").show();
+    };
 
-  if(DEBUG) {
-    app.ui.playEndSequence(app.promptUser);
-  }
-});
+    introJs.introJs().oncomplete(show_buttons).onexit(show_buttons).start();
+
+}).on("click", "#begin", function(e) {
+    e.preventDefault();
+    $("#homeMenu").hide();
+    $("body h1").addClass("h1_w_controls");
+    $("#container, .btn").show();
+    app.run();
+    if(DEBUG) {
+      app.ui.playEndSequence(app.promptUser);
+    }
+}).on("click", "#undo", function(e) {
+    app.ui.undo();
+}).on("click", "#reset", function(e) {
+    window.location.reload();
+});/*[0].addEventListener('DOMContentLoaded', function() {
+
+
+});*/

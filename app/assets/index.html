@@ -2,32 +2,38 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Meiosis Trainer</title>
-
-      <link href="css/vendor.css" rel="stylesheet" type="text/css">
+    <title>Meiosis</title>
+    <link href="css/vendor.css" rel="stylesheet" type="text/css">
     <link href="css/app.css" rel="stylesheet" type="text/css">
     <script src="js/vendor.js"></script>
     <script src="js/app.js"></script>
-
 </head>
 
 <body>
-
-  <div class="container-fluid well" style="max-width: 710px; height: 750px" >
-    <div class="meiosis-intro-overlay">
+  <div class="container-fluid well" style="max-width: 710px; height: 750px;" >
+    <div class="meiosis-intro" style="display:none">
         <div class="precursor intro-js-item" data-intro="These are the the precursor cells inside the egg after fertilisation. Check this carefully for which chromosomes you are starting with.">
         </div>
-        <div class="cell-box intro-js-item" data-intro="This is the cell box, drag cell combinations from the cell box to the large egg above." data-step="2">
+        <div class="cell-box intro-js-item" data-intro="This is the cell box, drag cell combinations from the cell box to the large egg above." data-step="2" data-position="top">
         </div>
-        <div class="drop-area intro-js-item" data-intro="This is the first egg, <div class='hd_example'></div>drop the chromosomes from the cell box to begin meiosis. You will be asked if the cell is haploid or diploid. " data-step="3">
+        <div class="drop-area intro-js-item" data-intro="This is the first egg, drop the chromosomes from the cell box to begin meiosis.  You will be asked if the cell is haploid or diploid. <div class='hd_example'></div>" data-step="3" data-position="left">
         </div>
     </div>
-    <div class="row intro-js-item" data-intro="You can see the different stages of meiosis scrolling up in the background as you work through the exercise. Once you have completed all the stages, you will be prompted to download a PDF." data-step="4">
-      <div class="col-md-12">
+    <div class="row">
         <h1>Meiosis</h1>
-
-        <div id="container" style="height: 100%"></div>
-
+      <div class='controls'>
+            <button id="undo" class="btn-success btn" style="display: none">Undo</button>
+            <button id="reset" class="btn-danger btn" style="display: none">Reset</button>
+      </div>
+    </div>
+    <div class="row" id="homeMenu">
+      <div id='spacer'></div>
+      <button id="begin" class="form-control btn-primary">Begin</button><br><br>
+      <button id="tour" class="form-control btn-success">Take the Tour</button>
+    </div>
+    <div class="row intro-js-item" data-intro="You can see the different stages of meiosis scrolling up in the background as you work through the exercise. Once you have completed all the stages, you will be prompted to download a PDF." data-step="4" data-position="bottom-middle-aligned">
+      <div class="col-md-12">
+        <div id="container" style="display:none"></div>
       </div>
     </div>
 
@@ -36,7 +42,7 @@
       <label class="form-check-label" for="hap">
       <input type="radio" class="form-check-input" name="hapdip" id="hap">Haploid<em>&nbsp;OR</em></label>
           <label class="form-check-label" for="dip">  <input type="radio" class="form-check-input" name="hapdip" id="dip">Diploid</label>?
-        </div>
+  </div>
   </div>
 </div>
 </body>
