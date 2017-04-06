@@ -1630,7 +1630,7 @@ app.stage.on("mousedown", function(e){
 
 // jquery events
 $(app.stage).on('touchEgg', function(e, args){
-		$("#labelme").css({left: args.egg.group.x(), top: args.egg.group.y()}).show();
+		$("#labelme").show();
 
     $("#labelme input").on('change', function(e) {
         if(!args.egg.label) {
@@ -1705,7 +1705,7 @@ $(document).on('docReady', "#container", function() {
     $("#container, .meiosis-intro").show();
     app.run();
     function show_buttons() {
-        $(".btn").show();
+        $(".btn, .control-row").show();
     };
 
     introJs.introJs().oncomplete(show_buttons).onexit(show_buttons).start();
@@ -1714,7 +1714,8 @@ $(document).on('docReady', "#container", function() {
     e.preventDefault();
     $("#homeMenu").hide();
     $("body h1").addClass("h1_w_controls");
-    $("#container, .btn").show();
+    $("#container, .control-row").show();
+
     app.run();
     if(DEBUG) {
       app.ui.playEndSequence(app.promptUser);
@@ -1722,7 +1723,8 @@ $(document).on('docReady', "#container", function() {
 }).on("click", "#undo", function(e) {
     app.ui.undo();
 }).on("click", "#reset", function(e) {
-    window.location.reload();
+bootbox.confirm("This will reload the application. Are you sure?", function(c) { if(c) { window.location.reload(); }});
+
 });/*[0].addEventListener('DOMContentLoaded', function() {
 
 
