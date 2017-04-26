@@ -1,8 +1,17 @@
+/**
+ * @Author: ps158
+ * @Date:   2017-02-02T09:49:07+11:00
+ * @Last modified by:   ps158
+ * @Last modified time: 2017-04-26T11:19:45+10:00
+ */
+
+
+
 module.exports = {
   modules: {
     autoRequire: {
       // outputFileName : [ entryModule ]
-        'js/app.js' : ['logic'],
+        'js/app.js' : ['app'],
     }
   },
   npm: {

@@ -1,8 +1,17 @@
+/**
+ * @Author: ps158
+ * @Date:   2017-03-30T13:03:24+11:00
+ * @Last modified by:   ps158
+ * @Last modified time: 2017-04-26T13:44:23+10:00
+ */
+
+
+
 body {
     margin: 0;
     padding: 0;
     overflow: none;
-
+    min-width: 710px;
     font-family: 'Corbel', verdana, sans-serif;
 }
 
@@ -76,11 +85,18 @@ h1 {
   width: 100%;
 }
 .h1_w_controls {
-    font-size: 16pt;
+    font-size: 18pt;
     text-align: left;
     margin-left: 1.0em;
-    /*width: 200px;
-    display: inline-block;*/
+    width: 800px;
+}
+.h1_w_controls > button {
+    display: inline-block;
+    margin-left: 335px;
+}
+.h1_w_controls > button:nth-child(n+2) {
+    display: inline-block;
+    margin-left: 15px;
 }
 h2 {
   margin:1em;
@@ -95,7 +111,7 @@ h2 {
     margin-top: 13px;
 }
 .control-row {
-  height: 4em;
+  height: 36px;
   display: none;
   width: 680px;
 }
@@ -142,4 +158,18 @@ h2 {
   width: 180px;
   height: 65px;
   background-repeat: no-repeat;
+}
+.pdf-button {
+    margin-left: 460px;
+    margin-top: 500px;
+    z-index: 4;
+    position: absolute;
+    display:none;
+}
+.close-button {
+    margin-left: 536px;
+    margin-top: 601px;
+    z-index: 4;
+    position: absolute;
+    display: none;
 }

@@ -20,12 +20,12 @@
         </div>
     </div>
     <div class="row control-row">
-        <div class="col-md-6">
-              <h1 class="h1_w_controls">Meiosis</h1>
-        </div>
-        <div class="col-md-6 controls">
-              <button id="undo" class="btn-success btn" style="">Undo</button>
-              <button id="reset" class="btn-danger btn" style="">Reset</button>
+        <div class="col-sm-12 col-md-12 col-lg-12">
+              <div class="h1_w_controls">Meiosis
+                <button id="undo" class="btn-primary btn" style="">Undo</button>
+                <button id="pdf" class="btn-success btn" style="">Preview</button>
+                <button id="reset" class="btn-danger btn" style="">Reset</button>
+              </div>
         </div>
     </div>
     <div class="row" id="homeMenu">
@@ -35,6 +35,8 @@
     </div>
     <div class="row intro-js-item" data-intro="You can see the different stages of meiosis scrolling up in the background as you work through the exercise. Once you have completed all the stages, you will be prompted to download a PDF." data-step="4" data-position="bottom-middle-aligned">
       <div class="col-md-12">
+        <button class="pdf-button btn-default btn" id='download-pdf'>Download PDF</button>
+          <button class="close-button btn" id='close-preview'>Close Preview</button>
         <div id="container" style="display:none"></div>
       </div>
     </div>

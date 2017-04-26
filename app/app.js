@@ -1,3 +1,12 @@
+/**
+ * @Author: ps158
+ * @Date:   2017-02-02T10:13:46+11:00
+ * @Last modified by:   ps158
+ * @Last modified time: 2017-04-26T13:51:17+10:00
+ */
+
+
+
 require('konva');
 require('bootstrap');
 
@@ -26,7 +35,7 @@ var buttonHoverColor = '#699494';
 var buttonClickColor = '#FFD874';
 
 var interactableThresholdOpacity = 0.8;
-
+var unfocusedEggOpacity = 0;
 var topOffset = -35;
 
 var iconWidth = 140;
@@ -441,7 +450,7 @@ undo: function() {
                     app.ui.toggleAllIconsDraggable(egg.prev, true);
                 }
                 if(egg.next) {
-                    egg.next.opacity(0.4);
+                    egg.next.opacity(unfocusedEggOpacity);
                     egg.next.canswerId = null;
                     app.ui.toggleAllIconsDraggable(egg.next, false);
                 }
@@ -576,7 +585,7 @@ placeInEgg: function(egg, pointerPos) {
               }
 
               if(! prevEgg.isPrecursor) {
-                  prevEgg.opacity(0.4);
+                  prevEgg.opacity(unfocusedEggOpacity);
 
                   app.ui.toggleAllIconsDraggable(prevEgg, false);
               }
@@ -633,7 +642,7 @@ if(egg) {
                                               }});
                                           egg.next.moveToTop();
                                     } else {
-                                        app.ui.playEndSequence(app.promptUser);
+                                        app.ui.playEndSequence(app.showDocumentLayout);
                                     }
                             }});
         }
@@ -652,7 +661,7 @@ scrollPage: function(egg) {
 
         app.tween = new Konva.Tween({
           node: app.layer,
-          duration: 0.5,
+          duration: 0.1,
           y: y,
           opacity: 1,
           onFinish: function() {
@@ -707,7 +716,7 @@ returnToContainer: function(icon, scaled) {
 
   app.chromTween = new Konva.Tween({
     node: app.currentDragObject,
-    duration: 0.3,
+    duration: 0.1,
     opacity: 1,
     scaleX: 1,
     scaleY: 1,
@@ -727,7 +736,7 @@ checkForEmptyEgg: function(egg) {
   if(egg.chromos.length === 0) {
           egg.fill(circleFillColor);
           if(egg.next) {
-                egg.next.opacity(0.4);
+                egg.next.opacity(unfocusedEggOpacity);
           }
           if(egg.prev) {
                 egg.prev.opacity(1.0);
@@ -920,9 +929,6 @@ imageSources.sequences[seqStr].icons.forEach(
     });
 }
 
-//iconMenu.group.draw();
-//staticLayer.draw();
-
 if(focusedEgg.group.startingPosition && sequence == 1) {
     app.ui.focus(focusedEgg);
 }
@@ -974,9 +980,9 @@ focus: function(thisEgg, params) {
 
   app.eggTween = new Konva.Tween({
       node: thisEgg,
-      duration: 0.2,
+      duration: 0.1,
       fill:  params.focusOut ? circleFillColor : '#FFF',
-      opacity: params.focusOut ? 0.2 : 1,
+      opacity: params.focusOut ? unfocusedEggOpacity : 1,
       onFinish: function() {
           if(app.safeLabel) {
               app.safeLabel.moveTo(thisEgg.group);
@@ -1038,11 +1044,11 @@ focus: function(thisEgg, params) {
 
   app.groupTween = new Konva.Tween({
     node: thisEgg.group,
-    duration: 0.6,
+    duration: 0.5,
     x: x,
     y: y,
     easing: Konva.Easings.BackEaseIn,
-    opacity: params.focusOut ? 0.2 : 1,
+    opacity: params.focusOut ? unfocusedEggOpacity : 1,
     scaleX: params.focusOut ? 1 : circleFocusMultiplier,
     scaleY: params.focusOut ? 1 : circleFocusMultiplier,
     onFinish: function() {
@@ -1059,8 +1065,6 @@ focus: function(thisEgg, params) {
 
     app.thread = setTimeout(function() {
         iconMenu.setListening(false);
-      //  resetButton.setListening(false);
-      //  undoButton.setListening(false);
         app.groupTween.play();
 
     }, 50);
@@ -1339,7 +1343,7 @@ var setPrecursor = function(pX, pY, i) {
           x = problemPosFormula + circleDiameter * 1.2;
         }
 
-        opacity = i > 1 ? 0.4 : 1.0;
+        opacity = i > 1 ? unfocusedEggOpacity : 1.0;
 
         var egg = new Konva.Circle({
             radius: (circleDiameter / 2) * circleFocusMultiplier,
@@ -1385,9 +1389,11 @@ app.stage.add(app.staticLayer, app.layer, app.focusLayer, app.tempLayer);
 
 
 app.layer.setListening(false);
+
+// hide all eggs
 app.layer.children.forEach(
   function(n) {
-      n.opacity(0.2);
+      n.opacity(0);
 });
 
 app.currentDragObject = null;
@@ -1404,22 +1410,54 @@ app.stage.on("dragstart", function(e){
 
 });
 
-app.promptUser = {
-  onComplete: function() {
-      var confirmed = bootbox.confirm("Save your work as a PDF [OK] or return to the demonstration [Cancel]?",
-      function(confirmed) {
-          if(confirmed === true) {
-              $("#container").trigger('docReady');
-          } else {
-              app.layer.scaleX(1.0);
-              app.layer.scaleY(1.0);
-              app.layer.y(app.prevLayerY);
-              app.staticLayer.show();
-              app.focusLayer.show();
-              app.tempLayer.show();
+app.pdfPrompt =
+function (callback) {
+    var confirmed = bootbox.confirm("Save your work as a PDF [OK] or return to the demonstration [Cancel]?",
+    function(confirmed) {
+        if(confirmed === true) {
+            $("#container").trigger('docReady');
+        } else {
+            app.layer.scaleX(1.0);
+            app.layer.scaleY(1.0);
+            app.recOpacity(app.layer, 0);
+            app.layer.y(app.prevLayerY);
+            app.layer.draw();
+            app.staticLayer.show();
+            app.focusLayer.show();
+            app.tempLayer.show();
+        }
+    });
+};
+app.recOpacity = function(o, v) {
+      o.children.forEach(function(n) {
+          n.opacity(v);
+          if(n.children) {
+              app.recOpacity(n, v);
           }
       });
+};
+app.showDocumentLayout = {
+  onComplete: function() {
+    app.staticLayer.hide();
+    app.focusLayer.hide();
+
+    app.recOpacity(app.layer, 1);
+    app.layer.scaleX(0.6);
+    app.layer.scaleY(0.6);
+    app.layer.setY(10);
+    app.layer.draw();
+    app.layer.show();
   }
+};
+
+app.hideDocumentLayout = function() {
+  app.staticLayer.show();
+  app.focusLayer.show();
+
+  app.recOpacity(app.layer, 0);
+  app.layer.scaleX(1);
+  app.layer.scaleY(1);
+  app.layer.batchDraw();
 };
 
 var previousShape;
@@ -1542,6 +1580,7 @@ app.stage.on("dragover", function(e){
 });
 
 app.stage.on("drop", function(e){
+
   var pointerPos = app.stage.getPointerPosition();
   var sizeRevert = false;
 
@@ -1657,8 +1696,6 @@ app.prevLayerY = 0;
 
 /* convert output to PDF and download */
 $(document).on('docReady', "#container", function() {
-
-  app.layer.opacity(1.0);
   app.layer.moveToTop();
   app.staticLayer.hide();
   app.focusLayer.hide();
@@ -1718,14 +1755,19 @@ $(document).on('docReady', "#container", function() {
 
     app.run();
     if(DEBUG) {
-      app.ui.playEndSequence(app.promptUser);
+      app.ui.playEndSequence(app.showDocumentLayout);
     }
 }).on("click", "#undo", function(e) {
-    app.ui.undo();
+      app.ui.undo();
 }).on("click", "#reset", function(e) {
-bootbox.confirm("This will reload the application. Are you sure?", function(c) { if(c) { window.location.reload(); }});
-
-});/*[0].addEventListener('DOMContentLoaded', function() {
-
-
-});*/
+      bootbox.confirm("This will reload the application. Are you sure?", function(c) { if(c) { window.location.reload(); }});
+}).on("click", "#pdf", function(e) {
+      app.ui.playEndSequence(app.showDocumentLayout);
+      $("#download-pdf, #close-preview").show();
+}).on("click", "#download-pdf", function(e) {
+      $("#download-pdf, #close-preview").hide();
+      $("#container").trigger("docReady");
+}).on("click", "#close-preview", function(e) {
+      $("#download-pdf, #close-preview").hide();
+      app.hideDocumentLayout();
+});
