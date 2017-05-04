@@ -1,6 +1,6 @@
 {
   "name": "meiosis-trainer",
-  "description": "A meiosis trainer for medical students",
+  "description": "Intended as a visual guide to learning meioisis. A PDF document is produced that is used by the instructor to assess students' understanding.  This app does *not* provide feedback on student understanding.",
   "author": "Paul Sijpkes",
   "version": "0.1.0",
   "license": "GPL-3.0",

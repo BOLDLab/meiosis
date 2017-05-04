@@ -2,11 +2,8 @@
  * @Author: ps158
  * @Date:   2017-03-30T13:03:24+11:00
  * @Last modified by:   ps158
- * @Last modified time: 2017-04-26T13:44:23+10:00
+ * @Last modified time: 2017-05-02T13:27:50+10:00
  */
-
-
-
 body {
     margin: 0;
     padding: 0;
@@ -92,7 +89,7 @@ h1 {
 }
 .h1_w_controls > button {
     display: inline-block;
-    margin-left: 335px;
+    margin-left: 318px;
 }
 .h1_w_controls > button:nth-child(n+2) {
     display: inline-block;
@@ -123,6 +120,9 @@ h2 {
 .introjs-helperLayer {
   background-color: transparent !important;
   margin: 0 auto;
+
+  -moz-box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8);
+  -webkit-box-shadow: 0 0 0 0 9999px rgba(0, 0, 0, 0.8);
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8);
 }
 .introjs-overlay {
@@ -132,32 +132,52 @@ h2 {
 .intro-js-item {
   position: absolute;
   background-color: transparent;
+  /*border: thin solid black;*/
 }
 .precursor {
   width: 145px;
   height: 130px;
   left: 10px;
-  top: 80px;
+  top: 16px;
 }
 .cell-box {
-  width: 600px;
-  height: 175px;
-  left: 10px;
-  top: 520px;
+    width: 600px;
+    height: 240px;
+    left: 33px;
+    top: 428px;
 }
 .drop-area {
   width: 400px;
-  height: 450px;
+  height: 500px;
   left: 230px;
-  top: 80px;
+  top: 32px;
+}
+.undo-btn {
+  width: 73px;
+  height: 50px;
+  left: 183px;
+  top: -39px;
+}
+.preview-btn {
+  width: 83px;
+  height: 50px;
+  left: 263px;
+  top: -39px;
+}
+.reset-btn {
+  width: 73px;
+  height: 50px;
+  left: 354px;
+  top: -39px;
 }
 .hd_example {
   display: inline;
-  float: right;
+  float: left;
   background-image: url(http://localhost:3333/img/hapdip.png);
-  width: 180px;
-  height: 65px;
+  width: 200px;
+  height: 120px;
   background-repeat: no-repeat;
+  background-size: contain;
 }
 .pdf-button {
     margin-left: 460px;
@@ -172,4 +192,57 @@ h2 {
     z-index: 4;
     position: absolute;
     display: none;
+}
+#home_header {
+    width: 100%;
+    height: 150px;
+    background-color: rgb(44, 113, 145);
+    margin: -20px 0px 0px 0px;
+}
+#home_header > h1 {
+  color: #fff;
+  text-align: left;
+  font-size: 24pt;
+  display: inline-block;
+  margin-top:53px;
+  margin-left: 45px;
+  font-weight: 300;
+
+}
+#home_nav {
+  width: 100%;
+  height: 80px;
+  margin:0;
+  background-color: rgb(248, 155, 28);
+  color: #000;
+  font-size: 24pt;
+}
+#home_nav a[name='begin'], #home_nav a[name='tour'] {
+  color: #000;
+  padding-left: 1em;
+  padding-right: 1em;
+  margin-top: 0.5em;
+  display: inline-block;
+  cursor: pointer;
+}
+#home_img {
+  width: 100%;
+  height: 520px;
+  margin:0;
+  background-image: url(/img/home_image.png);
+}
+#home_footer{
+  width: 100%;
+  height: 200px;
+  margin:0;
+  background-color: rgb(238,232,195);
+}
+#home_footer > p {
+  margin-top:53px;
+  margin-left: 45px;
+  color: #000;
+  font-size: 12pt;
+  text-align:left;
+  display: inline-block;
+  font-weight: 700;
 }

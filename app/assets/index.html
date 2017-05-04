@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=8,IE=9" />
     <title>Meiosis</title>
     <link href="css/vendor.css" rel="stylesheet" type="text/css">
     <link href="css/app.css" rel="stylesheet" type="text/css">
@@ -17,26 +18,44 @@
         <div class="cell-box intro-js-item" data-intro="This is the cell box, drag cell combinations from the cell box to the large egg above." data-step="2" data-position="top">
         </div>
         <div class="drop-area intro-js-item" data-intro="This is the first egg, drop the chromosomes from the cell box to begin meiosis.  You will be asked if the cell is haploid or diploid. <div class='hd_example'></div>" data-step="3" data-position="left">
+        <div class="undo-btn intro-js-item" data-intro="Undo your previous dropped chromosome with this button." data-step="4">
+        </div>
+        <div class="preview-btn intro-js-item" data-intro="Toggle the preview PDF document with this button." data-step="5">
+        </div>
+        <div class="reset-btn intro-js-item" data-intro="Reset the whole app with this button." data-step="6">
+        </div>
         </div>
     </div>
     <div class="row control-row">
         <div class="col-sm-12 col-md-12 col-lg-12">
               <div class="h1_w_controls">Meiosis
-                <button id="undo" class="btn-primary btn" style="">Undo</button>
+                      <button id="undo" class="btn-primary btn" style="">Undo</button>
+
                 <button id="pdf" class="btn-success btn" style="">Preview</button>
                 <button id="reset" class="btn-danger btn" style="">Reset</button>
               </div>
         </div>
     </div>
     <div class="row" id="homeMenu">
+      <div class="row" id="home_header">
+        <h1>MEIOSIS</h1>
+      </div>
+      <div class="row" id="home_nav">
+        <a id="begin" name="begin" class="">Begin</a>  |
+        <a id="tour" name="tour" class="">Take the Tour</a>
+      </div>
+      <div class="row" id="home_img"></div>
+        <div class="row" id="home_footer">
+          <p>Meiosis: dividing pollen mother cells<br>
+          (at the end of meiotic division) - Lillium plant</p>
+        </div>
+    <div class="row">
       <div id='spacer'></div>
-      <button id="begin" class="form-control btn-primary">Begin</button><br><br>
-      <button id="tour" class="form-control btn-success">Take the Tour</button>
+        </div>
     </div>
-    <div class="row intro-js-item" data-intro="You can see the different stages of meiosis scrolling up in the background as you work through the exercise. Once you have completed all the stages, you will be prompted to download a PDF." data-step="4" data-position="bottom-middle-aligned">
+    <div class="row intro-js-item" data-intro="Once you have completed all the stages, you will be prompted to download a PDF." data-step="7" data-position="bottom-middle-aligned">
       <div class="col-md-12">
         <button class="pdf-button btn-default btn" id='download-pdf'>Download PDF</button>
-          <button class="close-button btn" id='close-preview'>Close Preview</button>
         <div id="container" style="display:none"></div>
       </div>
     </div>

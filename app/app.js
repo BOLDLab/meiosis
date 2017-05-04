@@ -2,7 +2,7 @@
  * @Author: ps158
  * @Date:   2017-02-02T10:13:46+11:00
  * @Last modified by:   ps158
- * @Last modified time: 2017-04-26T13:51:17+10:00
+ * @Last modified time: 2017-05-03T16:42:07+10:00
  */
 
 
@@ -10,16 +10,16 @@
 require('konva');
 require('bootstrap');
 
-var DEBUG = false;
+var DEBUG = true;
 
 var app = { run: function(){
 
-app.sizeChangeOnDrop = 3.2;
+app.sizeChangeOnDrop = 2.5;
 
 var width = 800;
 var height = 610;
-var circleDiameter = 90;
-var circleSpace = 100;
+var circleDiameter = 145;
+var circleSpace = 155;
 
 var borderColor = '#896724';
 var circleFillColor = 'rgb(201,200,184)';//'rgba(254,255,173,0.8)';
@@ -27,7 +27,7 @@ var circleDropColor = '#FFF';//'#DAD7C5';
 var circleHoverColor = '#EEE';//'rgb(117,128,194)';
 var circleStrokeColor = 'black';
 
-var circleFocusMultiplier = 4.0;
+var circleFocusMultiplier = 2.65;
 
 var buttonLabelColor = '#F7DFAE';
 var buttonFillColor = '#467D7D';
@@ -36,22 +36,22 @@ var buttonClickColor = '#FFD874';
 
 var interactableThresholdOpacity = 0.8;
 var unfocusedEggOpacity = 0;
-var topOffset = -35;
+var topOffset = -100;
 
 var iconWidth = 140;
 var iconHeight = 140;
-var iconHomeScale = 0.8;
-var iconsPerRow = 3;
+var iconHomeScale = 0.9;
+var iconsPerRow = 5;
 
 var containerFill = '#FFF1D6';//'rgb(201,200,184)';
 var containerStroke = 'black';
 var containerHeight = 160;
-var containerX = 0;
+var containerX = -21;
 var containerY = 280;
-var containerWidth = 530;
+var containerWidth = 615;
 
-var precursorX = 28;
-var precursorY = 10;
+var precursorX = 33;
+var precursorY = 13;
 
 //- (iconWidth * 0.25);
 var rightLabelOffset = - (circleSpace / 2);
@@ -61,66 +61,81 @@ var urlBase = '';//'/test/meiosis/'
 
 var focusedEgg = null;
 var focusPositionX = 410;
-var focusPositionY = 185;
+var focusPositionY = 225;
 
-var textEggLabels = [ {x: -67, y: (circleSpace / 2), text: 'Precursor Germ cells'},
+var textEggLabels = [ {x: -67, y: 75, text: 'Precursor Germ cells'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase I'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Metaphase I'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Anaphase I'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase I'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                    //  {x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase I'},
+                    //  {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                    //  {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase II'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Prophase II'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Metaphase II'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Metaphase II'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Anaphase II'},
                       {x: circleSpace + rightLabelOffset, y: 0, text: 'Anaphase II'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase II'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase II'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
-                      {x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      //{x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase II'},
+                      //{x: circleSpace + rightLabelOffset, y: 0, text: 'Telophase II'},
+                      //{x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      //{x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      //{x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
+                      //{x: circleSpace + rightLabelOffset, y: 0, text: 'Cytokinesis'},
                     ];
 
 var imageSources = {
-                    precursor: 'img/Precursor-Germ-Cell.png',
+                    precursor: 'img/Precursor-Germ-Cell-80.png',
                     sequences: {
                       PROPHASE_I:  {
-                        icons: [  'img/Prophase-1.png',
-                                  'img/X-Prophase-1A.png',
-                                  'img/X-Prophase-1B.png'],
+                        icons: [  'img/Prophase 1/PROPHASE 1 - A version-80.png',
+                                  'img/Prophase 1/Prophase-1 -B version-80.png',
+                                  'img/Prophase 1/Ptophase-1 -C- version-80.png'],
                         answerIds: [ 'c' , 'x1' , 'x2']
                       },
                        METAPHASE_I:  {
                           // links to previous answers
                           links: {
-                            c: ['c'],
-                            x1: ['x1','x2'],
-                            x2: ['x1','x3']
+                            c: ['c1','c2','x1'],
+                            x1: ['x2', 'x3','x4'],
+                            x2: ['x5', 'x6','x7']
                           },
-                          icons: [ 'img/Metaphase-1.png',
-                                    'img/X-Metaphase-1A.png',
-                                    'img/X-Metaphase-1B.png',
-                                    'img/X-Metaphase-1C.png',
+                          icons: [ 'img/Metaphase 1/Ai-Metaphase-1-80.png',
+                                    'img/Metaphase 1/Aii-Metaphase-1-80.png',
+                                    'img/Metaphase 1/Aiii-Metaphase-1-80.png',
+                                    'img/Metaphase 1/Bi-Metaphase-1-80.png',
+                                    'img/Metaphase 1/Bii-Metaphase-1-80.png',
+                                    'img/Metaphase 1/Biii-Metaphase-1-80.png',
+                                    'img/Metaphase 1/Ci-Metaphase-1-80.png',
+                                    'img/Metaphase 1/Cii-Metaphase-1-80.png',
+                                    'img/Metaphase 1/Ciii-Metaphase-1-80.png'
                                   ],
-                          answerIds: ['x2', 'x1', 'c', 'x3'],
+                          answerIds: ['c1', 'c2', 'x1', 'x2', 'x3', 'x4','x5','x6','x7'],
                       },
                        ANAPHASE_I:  {
                          links: {
-                           c: ['c','x1'],
-                           x1: ['x2'],
-                           x2: ['x3','x1'],
-                           x3: ['x2','x1','x3'],
+                           c1: ['c1','c2','x1'],
+                           c2: ['c1','c2','x1'],
+                           x1: ['c1','c2','x1'],
+                           x2: ['x2','x3','x4'],
+                           x3: ['x2','x3','x4'],
+                           x4: ['x2','x3','x4'],
+                           x5: ['x5','x6','x7'],
+                           x6: ['x5','x6','x7'],
+                           x7: ['x5','x6','x7'],
                          },
-                          icons: [ 'img/Anaphase-1.png',
-                          'img/X-Metaphase-1A.png',
-                          'img/X-Metaphase-1B.png',
-                          'img/X-Metaphase-1C.png',],
-                        answerIds: ['x3', 'x1', 'x2', 'c'],
+                          icons: [ 'img/Anaphase 1/Ai-Anaphase-1-80.png',
+                          'img/Anaphase 1/Aii-Anaphase-1-80.png',
+                          'img/Anaphase 1/Aiii-Anaphase-1-80.png',
+                          'img/Anaphase 1/Bi-Anaphase-1-80.png',
+                          'img/Anaphase 1/Bii-Anaphase-1-80.png',
+                          'img/Anaphase 1/Biii-Anaphase-1-80.png',
+                          'img/Anaphase 1/Ci-Anaphase-1-80.png',
+                          'img/Anaphase 1/Cii-Anaphase-1-80.png',
+                          'img/Anaphase 1/Ciii-Anaphase-1-80.png'],
+                        answerIds: ['c1', 'c2', 'x1', 'x2', 'x3', 'x4','x5','x6','x7'],
                      },
-                     TELOPHASE_I:  {
+/*TELOPHASE_I:  {
                          links: {
                            c: ['c'],
                            x1: ['x1','x2'],
@@ -161,7 +176,7 @@ var imageSources = {
                                 'img/X-Metaphase-1B.png',
                                 'img/X-Metaphase-1C.png',],
                         answerIds: ['x3', 'x1', 'x2', 'c'],
-                    },
+                    },*/
                     PROPHASE_II_A:  {
                       links: {
                         c: ['c'],
@@ -363,7 +378,7 @@ app.sequences = [ null,
 
 var loadCount = [];
 
- app.stage = new Konva.Stage({
+app.stage = new Konva.Stage({
     container: '#container',
     width: width,
     height: height
@@ -379,16 +394,55 @@ app.staticLayer = new Konva.Layer({name: 'staticLayer'});
 
 app.focusLayer = new Konva.Layer({name: 'focusLayer'});
 
+// recursive opacity
+app.recOpacity = function(o, v, exempt) {
+    if(!exempt) exempt = null;
+      o.children.forEach(function(n) {
+          n.opacity(v);
+          if(n.children && typeof n !== exempt) {
+              app.recOpacity(n, v);
+          }
+      });
+};
+
+app.shuffle = /**
+ * Shuffles array in place.
+ * @param {Array} a items The array containing the items.
+ from: http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array#answer-6274381
+ */
+function shuffle(o) {
+  if(DEBUG) {
+      console.log("Before shuffle");
+      console.log(o.icons);
+      console.log(o.answerIds);
+  }
+    var j, x, i;
+    for (i = o.icons.length; i; i--) {
+        j = Math.floor(Math.random() * i);
+        x = o.icons[i - 1];
+        xa = o.answerIds[i - 1];
+        o.icons[i - 1] = o.icons[j];
+        o.icons[j] = x;
+        o.answerIds[i- 1] = o.answerIds[j];
+        o.answerIds[j] = xa;
+    }
+  if(DEBUG) {
+        console.log("After shuffle");
+        console.log(o.icons);
+        console.log(o.answerIds);
+  }
+};
+
 var undoHistory = [];
 
 var DOMLabelWidth = 0; // set with jquery
 var DOMLabelHeight = 0;
 
 // evaluate dimensions
-var problemPosFormula = app.stage.width() - (circleDiameter * 5);
+var problemPosFormula = app.stage.width() - 230;
 var cctXPos = containerX;
 var cctYPos = containerY;
-var iconHSpacing = iconWidth * 0.6;
+var iconHSpacing = iconWidth * 0.65;
 var iconVSpacing = iconHeight * 0.8;
 //var containerWidth = (iconWidth * iconsPerRow) * (iconHomeScale - 0.17);
 
@@ -568,13 +622,13 @@ toggleAllIconsDraggable: function(egg, draggable) {
 },
 
 placeInEgg: function(egg, pointerPos) {
-    var w = app.currentDragObject.getWidth();
-    var h = app.currentDragObject.getHeight();
+    //var w = app.currentDragObject.getWidth();
+    //var h = app.currentDragObject.getHeight();
 
     egg.canswerId = app.currentDragObject.answerId;
 
-    app.currentDragObject.setWidth(w);
-    app.currentDragObject.setHeight(h);
+  //  app.currentDragObject.setWidth(w);
+//    app.currentDragObject.setHeight(h);
 
     var prevEgg = egg.prev;
 
@@ -615,11 +669,11 @@ if(egg) {
           app.chromTween = new Konva.Tween({
             node: app.currentDragObject,
             duration: 0.1,
-            x: -55,
-            y: -55,
             opacity: 1,
-            scaleX: 0.9,
-            scaleY: 0.9,
+            scaleX: 1,
+            scaleY: 1,
+            x:-63,
+            y:-68,
             onFinish: function() {
                 app.layer.batchDraw();
                 app.tempLayer.batchDraw();
@@ -798,8 +852,6 @@ hideUnusedIcons: function(inx, seqStr, egg) {
 
     if(DEBUG) {
       if(egg.prev) {
-
-
         console.log("Prev: "+egg.prev.canswerId);
         console.log(" in > "+seqStr);
         console.log(imageSources.sequences[seqStr].links[eggAnswer].indexOf(answerId));
@@ -852,17 +904,25 @@ app.ui.clearIconMenu(iconMenu.group);
 
 if(app.ui.icon.konvaWrappers[seqStr].length === 0) {
 
-  var xchromPos = 12;
-  var ychromPos = 163;
+  var xchromPos = 36;
+  var ychromPos = 178;
   var vSpace = 0; //iconVSpacing;
-  var hSpace = 0;//cctXPos - iconHSpacing * 0.075;
+  var hSpace = 40;//cctXPos - iconHSpacing * 0.075;
 
 app.ui.icon.images = app.ui.icon.images || {};
 app.ui.icon.images[seqStr] = app.ui.icon.images[seqStr] || [];
 
+app.shuffle(imageSources.sequences[seqStr]);
+var eggAnswer = egg.prev ? egg.prev.canswerId : egg.canswerId;
+
 imageSources.sequences[seqStr].icons.forEach(
   function(src, inx) {
 
+  var answerId = imageSources.sequences[seqStr].answerIds[inx];
+
+  if(! eggAnswer || imageSources.sequences[seqStr].
+        links[eggAnswer].indexOf(answerId) !== -1)
+        {
   if(DEBUG) {
       console.log("Loading icon image: "+src);
   }
@@ -881,6 +941,7 @@ imageSources.sequences[seqStr].icons.forEach(
   });
 
   app.ui.icon.konvaWrappers[seqStr][inx].sequence = sequence;
+  app.ui.icon.konvaWrappers[seqStr][inx].answerId = answerId;
 
   app.ui.icon.konvaWrappers[seqStr][inx].setHomePos({x: xchromPos, y: ychromPos});
   app.ui.icon.konvaWrappers[seqStr][inx].setUIComponentType('icon');
@@ -901,14 +962,15 @@ imageSources.sequences[seqStr].icons.forEach(
   };
 
   //iconMenu.group.draw();
-  xchromPos += iconHSpacing;
+  xchromPos += iconHSpacing + hSpace;
 
   ychromPos += ((inx + 1) % iconsPerRow) === 0 ? vSpace : 0;
-  xchromPos = ((inx + 1) % iconsPerRow) === 0 ? hSpace : xchromPos;
+//  xchromPos = ((inx + 1) % iconsPerRow) === 0 ?  xchromPos : xchromPos + hSpace;
     //if(egg) {
-        app.ui.hideUnusedIcons(inx, seqStr, egg);
+  //      app.ui.hideUnusedIcons(inx, seqStr, egg);
   //  }
   }
+}
 );
 
   app.ui.icon.images[seqStr].forEach(function(img, inx) {
@@ -964,7 +1026,7 @@ focus: function(thisEgg, params) {
   //console.log("Current parent before focus tween "+app.currentDragObject.parent.attrs.name);
 
   app.focusLayer.moveToTop();
-  thisEgg.group.opacity(1);
+  app.recOpacity(thisEgg.group, 1);
   thisEgg.group.moveToTop();
 
   app.ui.scrollPage(params.reverseScroll ? thisEgg.prev : thisEgg.next);
@@ -1028,8 +1090,8 @@ focus: function(thisEgg, params) {
   app.textTween = new Konva.Tween({
       node: app.safeLabel,
       duration: 0.1,
-      x: params.focusOut ? app.safeLabel.startingPosition.x : -34, //text.x() - 100,
-      y: params.focusOut ? app.safeLabel.startingPosition.y : 50,
+      x: params.focusOut ? app.safeLabel.startingPosition.x : -140.5, //text.x() - 100,
+      y: params.focusOut ? app.safeLabel.startingPosition.y : 67,
       onFinish: function() {
           app.playEggTween();
       }
@@ -1196,7 +1258,7 @@ var text = new Konva.Text({
 
 // setup chromosome container
 var iconMenu = new Konva.Rect({
-  x: cctXPos + 25,
+  x: cctXPos + 50,
   y: cctYPos - 113,
       width: containerWidth,
       height: containerHeight,
@@ -1211,7 +1273,7 @@ iconMenu.uiContainer({
       y: cctYPos
 });
 
-var undoButton = new Konva.Rect({
+/*var undoButton = new Konva.Rect({
   x: containerX + containerWidth - (iconWidth / 2),
   y: containerY,
   width: iconWidth / 2,
@@ -1228,7 +1290,7 @@ undoButton.on('mouseover', function() {
 });
 undoButton.on('mouseout', function() {
        document.body.style.cursor = 'default';
-});
+});*/
 
 /*var undoText = new Konva.Text({
   x: containerX + containerWidth - (iconWidth / 2) + 15,
@@ -1292,8 +1354,8 @@ var setPrecursor = function(pX, pY, i) {
             x: precursorX,
             y: precursorY,
             image: precursorImg,
-            width: iconWidth / 1.7,
-            height: iconHeight / 1.7,
+            width: 150,
+            height: 150,
             name: 'precursor_'+i,
             fill: 'transparent'
       });
@@ -1303,7 +1365,7 @@ var setPrecursor = function(pX, pY, i) {
       };
 };
     // setup egg interface
-    var yoff = 0;
+    var yoff = 35;
     var opacity;
     var eggMap = [];
     var precursorImg = new Image();
@@ -1315,8 +1377,8 @@ var setPrecursor = function(pX, pY, i) {
         var y;
 
         if(i === 0) {
-              x = 28 + (circleDiameter / 2);
-              y = circleDiameter + topOffset;
+              x = 109;
+              y = 93;
 
               var pX = x; // create local instance
               var pY = y;
@@ -1425,17 +1487,13 @@ function (callback) {
             app.staticLayer.show();
             app.focusLayer.show();
             app.tempLayer.show();
+            app.staticLayer.batchDraw();
+            app.focusLayer.batchDraw();
+            app.tempLayer.batchDraw();
         }
     });
 };
-app.recOpacity = function(o, v) {
-      o.children.forEach(function(n) {
-          n.opacity(v);
-          if(n.children) {
-              app.recOpacity(n, v);
-          }
-      });
-};
+
 app.showDocumentLayout = {
   onComplete: function() {
     app.staticLayer.hide();
@@ -1445,8 +1503,8 @@ app.showDocumentLayout = {
     app.layer.scaleX(0.6);
     app.layer.scaleY(0.6);
     app.layer.setY(10);
-    app.layer.draw();
     app.layer.show();
+    app.layer.draw();
   }
 };
 
@@ -1457,7 +1515,13 @@ app.hideDocumentLayout = function() {
   app.recOpacity(app.layer, 0);
   app.layer.scaleX(1);
   app.layer.scaleY(1);
+
+  app.staticLayer.batchDraw();
+  app.focusLayer.batchDraw();
+  app.tempLayer.batchDraw();
+
   app.layer.batchDraw();
+    app.layer.show();
 };
 
 var previousShape;
@@ -1635,7 +1699,6 @@ app.stage.on("mousedown", function(e){
   if(e.target.opacity() < interactableThresholdOpacity) {
       return false;
   }
-
       var shape = e.target;
 
       if(shape && typeof shape.getUIComponentType === 'function') {
@@ -1670,6 +1733,7 @@ app.stage.on("mousedown", function(e){
 // jquery events
 $(app.stage).on('touchEgg', function(e, args){
 		$("#labelme").show();
+    $("#undo, #reset, #pdf").addClass("disabled").prop("disabled", true);
 
     $("#labelme input").on('change', function(e) {
         if(!args.egg.label) {
@@ -1681,6 +1745,8 @@ $(app.stage).on('touchEgg', function(e, args){
         var type = $(e.target).prop('id');
         args.egg.label.text(str + "\n("+type+")");
         args.callback();
+
+        $("#undo, #reset, #pdf").removeClass("disabled").prop("disabled", false);
         $("#labelme").hide().find('input').prop('checked', false).off('change');
     });
 });
@@ -1739,13 +1805,12 @@ $(document).on('docReady', "#container", function() {
     e.preventDefault();
     $("#homeMenu").hide();
     $("body h1").addClass("h1_w_controls");
-    $("#container, .meiosis-intro").show();
+    $("#container, .meiosis-intro, .control-row").show();
     app.run();
-    function show_buttons() {
-        $(".btn, .control-row").show();
-    };
 
-    introJs.introJs().oncomplete(show_buttons).onexit(show_buttons).start();
+    //function show_buttons() { $(".btn, .control-row").show(); }
+
+    introJs.introJs().start();
 
 }).on("click", "#begin", function(e) {
     e.preventDefault();
@@ -1755,19 +1820,25 @@ $(document).on('docReady', "#container", function() {
 
     app.run();
     if(DEBUG) {
-      app.ui.playEndSequence(app.showDocumentLayout);
+  //    app.ui.playEndSequence(app.showDocumentLayout);
     }
 }).on("click", "#undo", function(e) {
       app.ui.undo();
 }).on("click", "#reset", function(e) {
       bootbox.confirm("This will reload the application. Are you sure?", function(c) { if(c) { window.location.reload(); }});
 }).on("click", "#pdf", function(e) {
-      app.ui.playEndSequence(app.showDocumentLayout);
-      $("#download-pdf, #close-preview").show();
-}).on("click", "#download-pdf", function(e) {
-      $("#download-pdf, #close-preview").hide();
-      $("#container").trigger("docReady");
-}).on("click", "#close-preview", function(e) {
-      $("#download-pdf, #close-preview").hide();
+  if($("#pdf").hasClass("active")) {
+      $("#download-pdf").hide();
       app.hideDocumentLayout();
+      $("#pdf").removeClass("active"); //.prop("disabled", false);
+      $("#undo, #reset").removeClass("disabled").prop("disabled", false);
+  } else {
+      app.ui.playEndSequence(app.showDocumentLayout);
+      $("#download-pdf").show();
+      $(e.target).addClass("active");
+      $("#undo, #reset").addClass("disabled").prop("disabled", true);
+  }
+}).on("click", "#download-pdf", function(e) {
+      $("#download-pdf").hide();
+      $("#container").trigger("docReady");
 });
