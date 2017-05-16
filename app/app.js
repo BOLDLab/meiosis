@@ -7,7 +7,7 @@
 require('konva');
 require('bootstrap');
 
-var DEBUG = true;
+var DEBUG = false;
 
 var app = {
   run: function() {
@@ -1201,9 +1201,9 @@ var app = {
       },
       updateIcons: function(egg) {
         var sequence;
-
-        console.log("Home Scale on call: "+iconHomeScale);
-
+        if(DEBUG) {
+            console.log("Home Scale on call: "+iconHomeScale);
+        }
         if (typeof egg === 'number') {
           sequence = egg;
         } else {
@@ -1295,49 +1295,56 @@ var app = {
                 };
 
                 var vSpace = (iconHeight / 2) + 3;
-                //iconMenu.group.draw();
                 xchromPos += iconWidth;
-                console.log("Index count: "+inx);
+                if(DEBUG) {
+                  console.log("Index count: "+inx);
+                }
                 if(ac % iconsPerRow === 0) {
                   ychromPos += vSpace;
                   xchromPos = 45;
                 }
 
-
-                //  xchromPos = ((inx + 1) % iconsPerRow) === 0 ?  xchromPos : xchromPos + hSpace;
-                //if(egg) {
-                //      app.ui.hideUnusedIcons(inx, seqStr, egg);
-                //  }
               }
             } catch(error) {
                 console.err(error);
                 bootbox.alert(error);
+                return false;
             }
             }
           );
 
-          console.log("AC count: "+ac);
+          if(DEBUG) {
+              console.log("AC count: "+ac);
+          }
+
           if(ac > iconsPerRow) {
               iconHomeScale = 0.5;
           } else {
               iconHomeScale = 1;
           }
-          console.log("Konva length: "+app.ui.icon.konvaWrappers[seqStr].length);
+
+          if(DEBUG) {
+              console.log("Konva length: "+app.ui.icon.konvaWrappers[seqStr].length);
+          }
 
           app.ui.icon.konvaWrappers[seqStr].forEach(function(o, i) {
               //  o.sizeChangeOnDrop = iconHomeScale + 1;
                 //o.hSpacing = i > 0 ? hSpace * iconHomeScale : 0;
-                console.log("HSpacing = "+o.hSpacing+" ["+i+"]");
+                if(DEBUG) {
+                  console.log("HSpacing = "+o.hSpacing+" ["+i+"]");
+                }
                 o.setWidth(iconWidth * iconHomeScale);
                 o.setHeight(iconHeight * iconHomeScale);
-                console.log("Modulus = "+ (i % iconsPerRow));
+                if(DEBUG) {
+                    console.log("Modulus = "+ (i % iconsPerRow));
+                }
                 if(iconHomeScale < 1 && i > 1 && i % (iconsPerRow + 1) !== 0) {
                     o.setX(o.x() + hSpace / 2);
                 }
           });
-
-          console.log("Home Scale: "+iconHomeScale);
-
+          if(DEBUG) {
+              console.log("Home Scale: "+iconHomeScale);
+          }
           app.ui.icon.images[seqStr].forEach(function(img, inx) {
             app.ui.icon.images[seqStr][inx].src = urlBase + imageSources.sequences[seqStr].icons[inx];
           });
