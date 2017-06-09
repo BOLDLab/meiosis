@@ -1,3 +1,6 @@
+(function(){
+"use strict";
+
 /**
  * @Author: ps158
  * @Date:   2017-02-02T10:13:46+11:00
@@ -7,7 +10,7 @@
 require('konva');
 require('bootstrap');
 
-var DEBUG = false;
+var DEBUG = true;
 
 var app = {
   run: function() {
@@ -15,17 +18,17 @@ var app = {
     app.sizeChangeOnDrop = 3;
 
     var width = 800;
-    var height = 610;
+    var height = 2000;
     var circleDiameter = 145;
-    var circleSpace = 155;
+    var drop_areaSpace = 155;
 
     var borderColor = '#896724';
-    var circleFillColor = '#eed'; //'rgb(201,200,184)'; //'rgba(254,255,173,0.8)';
-    var circleDropColor = '#eed'; //'#DAD7C5';
-    var circleHoverColor = '#EEE'; //'rgb(117,128,194)';
-    var circleStrokeColor = 'black';
+    var drop_areaFillColor = '#eed'; //'rgb(201,200,184)'; //'rgba(254,255,173,0.8)';
+    var drop_areaDropColor = '#eed'; //'#DAD7C5';
+    var drop_areaHoverColor = '#EEE'; //'rgb(117,128,194)';
+    var drop_areaStrokeColor = 'black';
 
-    var circleFocusMultiplier = 2.65;
+    //var drop_areaFocusMultiplier = 2.65;
 
     var buttonLabelColor = '#F7DFAE';
     var buttonFillColor = '#467D7D';
@@ -33,7 +36,7 @@ var app = {
     var buttonClickColor = '#FFD874';
 
     var interactableThresholdOpacity = 0.8;
-    var unfocusedEggOpacity = 0;
+    var unfocusedDropAreaOpacity = 0;
     var topOffset = -100;
 
     var iconWidth = 140;
@@ -43,7 +46,7 @@ var app = {
 
     var containerFill = '#FFF1D6'; //'rgb(201,200,184)';
     var containerStroke = 'black';
-    var containerHeight = 160;
+    var containerHeight = 800;
     var containerX = -21;
     var containerY = 280;
     var containerWidth = 615;
@@ -52,84 +55,65 @@ var app = {
     var precursorY = 13;
 
     //- (iconWidth * 0.25);
-    var rightLabelOffset = -(circleSpace / 2);
-    var leftLabelOffset = -(circleSpace);
+    var rightLabelOffset = 300; //-(drop_areaSpace / 2);
+    var leftLabelOffset = -(drop_areaSpace);
     var scrollDistance = 10;
     var urlBase = ''; //'/test/meiosis/'
 
-    var focusedEgg = null;
+    var focusedDropArea = null;
     var focusPositionX = 410;
     var focusPositionY = 225;
 
-    var textEggLabels = [{
+    var textDropAreaLabels = [{
         x: -67,
         y: 75,
         text: 'Precursor Germ cells'
       },
       {
-        x: circleSpace + rightLabelOffset,
+        x: 0,//rightLabelOffset,
         y: 0,
         text: 'Prophase I'
       },
       {
-        x: circleSpace + rightLabelOffset,
+        x: 0,//drop_areaSpace + rightLabelOffset,
         y: 0,
         text: 'Metaphase I'
       },
       {
-        x: circleSpace + rightLabelOffset,
+        x: 0,
         y: 0,
         text: 'Anaphase I'
       },
       {
-        x: circleSpace + rightLabelOffset,
+        x: 0,
         y: 0,
-        text: 'Prophase II\n Centriole 1'
+        text: 'Prophase II'
       },
-      {
-        x: circleSpace + rightLabelOffset,
+      /*{
+        x: drop_areaSpace + rightLabelOffset,
         y: 0,
         text: 'Prophase II\n Centriole 2'
-      },
+      },*/
       {
-        x: circleSpace + rightLabelOffset,
+        x: 0,
         y: 0,
-        text: 'Metaphase II\n Centriole 1'
+        text: 'Metaphase II'
       },
-      {
-        x: circleSpace + rightLabelOffset,
+    /*  {
+        x: drop_areaSpace + rightLabelOffset,
         y: 0,
         text: 'Metaphase II\n Centriole 2'
-      },
+      },*/
       {
-        x: circleSpace + rightLabelOffset,
+        x: 0,
         y: 0,
-        text: 'Anaphase II\n Centriole 1'
+        text: 'Anaphase II'
       },
+
       {
-        x: circleSpace + rightLabelOffset,
+        x: 0,
         y: 0,
-        text: 'Anaphase II\n Centriole 2'
-      },
-      {
-        x: circleSpace - 200,
-        y: 80,
-        text: 'Final Gamete I'
-      },
-      {
-        x: circleSpace - 210,
-        y: 80,
-          text: 'Final Gamete II'
-      },
-      {
-        x: circleSpace - 210,
-        y: 80,
-        text: 'Final Gamete III'
-      },
-      {
-        x: circleSpace - 210,
-        y: 80,
-        text: 'Final Gamete IV'
+        text: 'Final Gamete'
       }
     ];
 
@@ -137,6 +121,9 @@ var app = {
       precursor: 'img/Precursor-Germ-Cell-80.png',
       sequences: {
         PROPHASE_I: {
+          iconWidth: 150,
+          focusPositionX: 280,
+          focusPositionY: 100,
           icons: ['img/Prophase 1/PROPHASE 1 - A version-80.png',
             'img/Prophase 1/Prophase-1 -B version-80.png',
             'img/Prophase 1/Ptophase-1 -C- version-80.png'
@@ -150,6 +137,9 @@ var app = {
             x1: ['x2', 'x3', 'x4'],
             x2: ['x5', 'x6', 'x7']
           },
+          iconWidth: 150,
+          focusPositionX: 280,
+          focusPositionY: 100,
         //  next_circle_bg_color: '#eed',
           icons: ['img/Metaphase 1/Ai-Metaphase-1-80.png',
             'img/Metaphase 1/Aii-Metaphase-1-80.png',
@@ -164,6 +154,7 @@ var app = {
           answerIds: ['c1', 'c2', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7'],
         },
         ANAPHASE_I: {
+          // links to previous answers [object keys are previous answers]
           links: {
             c1: ['c1', 'c2', 'x1'],
             c2: ['c1', 'c2', 'x1'],
@@ -175,8 +166,11 @@ var app = {
             x6: ['x5', 'x6', 'x7'],
             x7: ['x5', 'x6', 'x7'],
           },
+          iconWidth: 150,
+          focusPositionX: 280,
+          focusPositionY: 100,
         //  next_circle_bg_color: '#fff',
-          icons: ['img/Anaphase 11/Ai-Anaphase-1-80.png',
+          icons: ['img/Anaphase 1/Ai-Anaphase-1-80.png',
             'img/Anaphase 1/Aii-Anaphase-1-80.png',
             'img/Anaphase 1/Aiii-Anaphase-1-80.png',
             'img/Anaphase 1/Bi-Anaphase-1-80.png',
@@ -189,7 +183,34 @@ var app = {
           answerIds: ['c1', 'c2', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7'],
         },
 
-        PROPHASE_II_A: {
+        PROPHASE_II: {
+          links: {
+            c1: ['c1', 'c2', 'x1'],
+            c2: ['c1', 'c2', 'x3'],
+            x1: ['x1', 'x2', 'x3'],
+            x2: ['x1', 'x2', 'x3'],
+            x3: ['x3', 'x4', 'x5'],
+            x4: ['x3', 'x4', 'x5'],
+            x5: ['x5', 'x6', 'x7'],
+            x6: ['x5', 'x6', 'x7'],
+            x7: ['x5', 'x6', 'x7'],
+          },
+          iconWidth: 300,
+          focusPositionX: 240,
+          focusPositionY: 95,
+          icons: ['img/Prophase 11/Ai Prophase 11 - 1 2.png',
+              'img/Prophase 11/Aii Prophase 11 - 1 2.png',
+              'img/Prophase 11/Aiii Prophase 11 - 1 2.png',
+              'img/Prophase 11/Bi Prophase 11 - 1 2.png',
+              'img/Prophase 11/Bii Prophase 11 - 1 2.png',
+              'img/Prophase 11/Biii Prophase 11 - 1 2.png',
+              'img/Prophase 11/Ci Prophase 11 - 1 2.png',
+              'img/Prophase 11/Cii Prophase 11 - 1 2.png',
+              'img/Prophase 11/Ciii Prophase 11 - 1 2.png',
+            ],
+          answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
+        },
+      /*  PROPHASE_II_B: {
           links: {
             c1: ['c1', 'c2', 'x1','x2'],
             c2: ['c3', 'c4', 'x3','x4'],
@@ -222,440 +243,88 @@ var app = {
           ],
           answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
           'x6','x7','x8','x9','x10','x11','x12','x13','x14']
-        },
-        PROPHASE_II_B: {
+        },*/
+        METAPHASE_II: {
           links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
+            c1: ['c1', 'c2', 'x1'],
+            c2: ['c1', 'c2', 'x3'],
+            x1: ['x1', 'x2', 'x3'],
+            x2: ['x1', 'x2', 'x3'],
+            x3: ['x3', 'x4', 'x5'],
+            x4: ['x3', 'x4', 'x5'],
+            x5: ['x5', 'x6', 'x7'],
+            x6: ['x5', 'x6', 'x7'],
+            x7: ['x5', 'x6', 'x7'],
           },
-          icons: ['img/Prophase 11/Ai Prophase 11 - 1-80.png',
-            'img/Prophase 11/Ai Prophase 11 - 2-80.png',
-            'img/Prophase 11/Aii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Aii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Aiii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Aiii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Bi Prophase 11 - 1-80.png',
-            'img/Prophase 11/Bi Prophase 11 - 2-80.png',
-            'img/Prophase 11/Bii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Bii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Biii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Biii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Ci Prophase 11 - 1-80.png',
-            'img/Prophase 11/Ci Prophase 11 - 2-80.png',
-            'img/Prophase 11/Cii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Cii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Ciii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Ciii Prophase 11 - 2-80.png',
+          iconWidth: 300,
+          focusPositionX: 240,
+          focusPositionY: 95,
+          icons: ['img/Metaphase 11/Ai Metaphase 11 - 1 2.png',
+            'img/Metaphase 11/Aii Metaphase 11 - 1 2.png',
+            'img/Metaphase 11/Aiii Metaphase 11 - 1 2.png',
+            'img/Metaphase 11/Bi Metaphase 11 - 1 2.png',
+            'img/Metaphase 11/Bii Metaphase 11 - 1 2.png',
+            'img/Metaphase 11/Biii Metaphase 11 - 1 2.png',
+            'img/Metaphase 11/Ci Metaphase 11 - 1 2.png',
+            'img/Metaphase 11/Cii Metaphase 11 - 1 2.png',
+            'img/Metaphase 11/Ciii Metaphase 11 - 1 2.png',
           ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
+          answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
         },
-        METAPHASE_II_A: {
+        ANAPHASE_II: {
+          iconWidth: 300,
+          focusPositionX: 240,
+          focusPositionY: 95,
           links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-            x8: ['x10', 'x11', 'x12','x13','x14'],
-            x9: ['x10', 'x11', 'x12','x13','x14'],
-            x10: ['x10', 'x11', 'x12','x13','x14'],
-            x11: ['x10', 'x11', 'x12','x13','x14'],
-            x12: ['x10', 'x11', 'x12','x13','x14'],
-            x13: ['x10', 'x11', 'x12','x13','x14'],
-            x14: ['x10', 'x11', 'x12','x13','x14']
+            c1: ['c1', 'c2', 'x1'],
+            c2: ['c1', 'c2', 'x3'],
+            x1: ['x1', 'x2', 'x3'],
+            x2: ['x1', 'x2', 'x3'],
+            x3: ['x3', 'x4', 'x5'],
+            x4: ['x3', 'x4', 'x5'],
+            x5: ['x5', 'x6', 'x7'],
+            x6: ['x5', 'x6', 'x7'],
+            x7: ['x5', 'x6', 'x7'],
           },
-          icons: ['img/Metaphase 11/Ai Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Ai Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Aii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Aii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Aiii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Aiii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Bi Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Bi Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Bii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Bii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Biii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Biii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Ci Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Ci Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Cii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Cii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Ciii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Ciii Metaphase 11 - 2-80.png',
+          icons: ['img/Anaphase 11/Ai Anaphase 11 - 1 2.png',
+          'img/Anaphase 11/Aii Anaphase 11 - 1 2.png',
+          'img/Anaphase 11/Aiii Anaphase 11 - 1 2.png',
+          'img/Anaphase 11/Bi Anaphase 11 - 1 2.png',
+          'img/Anaphase 11/Bii Anaphase 11 - 1 2.png',
+          'img/Anaphase 11/Biii Anaphase 11 - 1 2.png',
+          'img/Anaphase 11/Ci Anaphase 11 - 1 2.png',
+          'img/Anaphase 11/Cii Anaphase 11 - 1 2.png',
+          'img/Anaphase 11/Ciii Anaphase 11 - 1 2.png',
           ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
+            answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
         },
-        METAPHASE_II_B: {
+        FINAL_GAMETES: {
+          iconWidth: 580,
+          focusPositionX: 30,
+          focusPositionY: 270,
           links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-            x8: ['x10', 'x11', 'x12','x13','x14'],
-            x9: ['x10', 'x11', 'x12','x13','x14'],
-            x10: ['x10', 'x11', 'x12','x13','x14'],
-            x11: ['x10', 'x11', 'x12','x13','x14'],
-            x12: ['x10', 'x11', 'x12','x13','x14'],
-            x13: ['x10', 'x11', 'x12','x13','x14'],
-            x14: ['x10', 'x11', 'x12','x13','x14']
+            c1: ['c1', 'c2', 'x1'],
+            c2: ['c1', 'c2', 'x3'],
+            x1: ['x1', 'x2', 'x3'],
+            x2: ['x1', 'x2', 'x3'],
+            x3: ['x3', 'x4', 'x5'],
+            x4: ['x3', 'x4', 'x5'],
+            x5: ['x5', 'x6', 'x7'],
+            x6: ['x5', 'x6', 'x7'],
+            x7: ['x5', 'x6', 'x7'],
           },
-          icons: ['img/Metaphase 11/Ai Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Ai Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Aii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Aii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Aiii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Aiii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Bi Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Bi Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Bii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Bii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Biii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Biii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Ci Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Ci Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Cii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Cii Metaphase 11 - 2-80.png',
-            'img/Metaphase 11/Ciii Metaphase 11 - 1-80.png',
-            'img/Metaphase 11/Ciii Metaphase 11 - 2-80.png',
+          icons: ['img/Final Gametes/Ai Gamete - 1a 1b 2a 2b.png',
+          'img/Final Gametes/Ai Gamete 11 - 1a 1b 2a 2b.png',
+          'img/Final Gametes/Aii Gamete 11 - 1a 1b 2a 2b.png',
+          'img/Final Gametes/AIII Gamete 11 - 1a 1b 2a 2b.png',
+          'img/Final Gametes/Bi Gamete 11 - 1a 1b 2a 2b.png',
+          'img/Final Gametes/Bii Gamete 11 - 1a 1b 2a 2b.png',
+          'img/Final Gametes/Biii Gamete 11 - 1a 1b 2a 2b.png',
+          'img/Final Gametes/Ci Gamete 11 - 1a 1b 2a 2b.png',
+          'img/Final Gametes/Cii Gamete 11 - 1a 1b 2a 2b.png',
+          'img/Final Gametes/Ciii Gamete 11 - 1a 1b 2a 2b.png',
           ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
-        },
-        ANAPHASE_II_A: {
-          links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-            x8: ['x10', 'x11', 'x12','x13','x14'],
-            x9: ['x10', 'x11', 'x12','x13','x14'],
-            x10: ['x10', 'x11', 'x12','x13','x14'],
-            x11: ['x10', 'x11', 'x12','x13','x14'],
-            x12: ['x10', 'x11', 'x12','x13','x14'],
-            x13: ['x10', 'x11', 'x12','x13','x14'],
-            x14: ['x10', 'x11', 'x12','x13','x14']
-          },
-          icons: ['img/Anaphase 11/Ai Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Ai Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Aii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Aii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Aiii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Aiii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Bi Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Bi Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Bii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Bii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Biii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Biii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Ci Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Ci Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Cii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Cii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Ciii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Ciii Anaphase 11 - 2-80.png',
-          ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
-        },
-        ANAPHASE_II_B: {
-          links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-            x8: ['x10', 'x11', 'x12','x13','x14'],
-            x9: ['x10', 'x11', 'x12','x13','x14'],
-            x10: ['x10', 'x11', 'x12','x13','x14'],
-            x11: ['x10', 'x11', 'x12','x13','x14'],
-            x12: ['x10', 'x11', 'x12','x13','x14'],
-            x13: ['x10', 'x11', 'x12','x13','x14'],
-            x14: ['x10', 'x11', 'x12','x13','x14']
-          },
-          icons: ['img/Anaphase 11/Ai Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Ai Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Aii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Aii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Aiii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Aiii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Bi Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Bi Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Bii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Bii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Biii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Biii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Ci Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Ci Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Cii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Cii Anaphase 11 - 2-80.png',
-            'img/Anaphase 11/Ciii Anaphase 11 - 1-80.png',
-            'img/Anaphase 11/Ciii Anaphase 11 - 2-80.png',
-          ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
-        },
-        FINAL_GAMETE_I: {
-          links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-            x8: ['x10', 'x11', 'x12','x13','x14'],
-            x9: ['x10', 'x11', 'x12','x13','x14'],
-            x10: ['x10', 'x11', 'x12','x13','x14'],
-            x11: ['x10', 'x11', 'x12','x13','x14'],
-            x12: ['x10', 'x11', 'x12','x13','x14'],
-            x13: ['x10', 'x11', 'x12','x13','x14'],
-            x14: ['x10', 'x11', 'x12','x13','x14']
-          },
-          icons: ['img/Final Gametes/Ai Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 2b-80.png'
-          ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
-        },
-        FINAL_GAMETE_II: {
-          links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-            x8: ['x10', 'x11', 'x12','x13','x14'],
-            x9: ['x10', 'x11', 'x12','x13','x14'],
-            x10: ['x10', 'x11', 'x12','x13','x14'],
-            x11: ['x10', 'x11', 'x12','x13','x14'],
-            x12: ['x10', 'x11', 'x12','x13','x14'],
-            x13: ['x10', 'x11', 'x12','x13','x14'],
-            x14: ['x10', 'x11', 'x12','x13','x14']
-          },
-          icons: ['img/Final Gametes/Ai Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 2b-80.png'
-          ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
-        },
-        FINAL_GAMETE_III: {
-          links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-            x8: ['x10', 'x11', 'x12','x13','x14'],
-            x9: ['x10', 'x11', 'x12','x13','x14'],
-            x10: ['x10', 'x11', 'x12','x13','x14'],
-            x11: ['x10', 'x11', 'x12','x13','x14'],
-            x12: ['x10', 'x11', 'x12','x13','x14'],
-            x13: ['x10', 'x11', 'x12','x13','x14'],
-            x14: ['x10', 'x11', 'x12','x13','x14']
-          },
-          icons: ['img/Final Gametes/Ai Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 2b-80.png'
-          ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
-        },
-        FINAL_GAMETE_IV: {
-          links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-            x8: ['x10', 'x11', 'x12','x13','x14'],
-            x9: ['x10', 'x11', 'x12','x13','x14'],
-            x10: ['x10', 'x11', 'x12','x13','x14'],
-            x11: ['x10', 'x11', 'x12','x13','x14'],
-            x12: ['x10', 'x11', 'x12','x13','x14'],
-            x13: ['x10', 'x11', 'x12','x13','x14'],
-            x14: ['x10', 'x11', 'x12','x13','x14']
-          },
-          icons: ['img/Final Gametes/Ai Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ai Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Aii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Aiii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Bi Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Bii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Biii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ci Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Cii Gamete 11 - 2b-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 1a-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 1b-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 2a-80.png',
-            'img/Final Gametes/Ciii Gamete 11 - 2b-80.png'
-          ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
+          answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
         }
       }
     };
@@ -664,16 +333,10 @@ var app = {
       'PROPHASE_I',
       'METAPHASE_I',
       'ANAPHASE_I',
-      'PROPHASE_II_A',
-      'PROPHASE_II_B',
-      'METAPHASE_II_A',
-      'METAPHASE_II_B',
-      'ANAPHASE_II_A',
-      'ANAPHASE_II_B',
-      'FINAL_GAMETE_I',
-      'FINAL_GAMETE_II',
-      'FINAL_GAMETE_III',
-      'FINAL_GAMETE_IV'
+      'PROPHASE_II',
+      'METAPHASE_II',
+      'ANAPHASE_II',
+      'FINAL_GAMETES',
     ];
 
     var loadCount = [];
@@ -687,7 +350,7 @@ var app = {
     var stageCenter = app.stage.width() / 2;
 
     app.layer = new Konva.Layer({
-      name: 'eggLayer'
+      name: 'drop_areaLayer'
     });
 
     app.tempLayer = new Konva.Layer({
@@ -725,8 +388,8 @@ var app = {
           console.log(o.icons);
           console.log(o.answerIds);
         }
-        var j, x, i;
-        for (i = o.icons.length; i; i--) {
+        let j, x, i, xa;
+        for (let i = o.icons.length; i; i--) {
           j = Math.floor(Math.random() * i);
           x = o.icons[i - 1];
           xa = o.answerIds[i - 1];
@@ -757,48 +420,48 @@ var app = {
 
     app.ui = {
 
-      setEggLabel: function(i, egg, x, y) {
-        if (!textEggLabels[i]) return false;
+      setDropAreaLabel: function(i, drop_area, x, y) {
+        if (!textDropAreaLabels[i]) return false;
 
         var text = new Konva.Text({
           fill: '#1F325C',
-          x: x + textEggLabels[i].x,
-          y: y + textEggLabels[i].y,
+          x: textDropAreaLabels[i].x,
+          y: textDropAreaLabels[i].y,
           fontSize: '14'
         });
 
         text.startingPosition = {
-          x: x + textEggLabels[i].x,
-          y: y + textEggLabels[i].y
+          x: textDropAreaLabels[i].x,
+          y: textDropAreaLabels[i].y
         };
-        text.text(textEggLabels[i].text);
+        text.text(textDropAreaLabels[i].text);
 
-        egg.group.add(text);
-        egg.label = text;
+        drop_area.group.add(text);
+        drop_area.label = text;
 
-        app.ui.debugRect(x + textEggLabels[i].x, y + textEggLabels[i].y, text.getWidth(), text.getHeight());
+        app.ui.debugRect(x + textDropAreaLabels[i].x, y + textDropAreaLabels[i].y, text.getWidth(), text.getHeight());
       },
 
       undo: function() {
-        var egg = undoHistory[undoHistory.length - 1];
+        var drop_area = undoHistory[undoHistory.length - 1];
 
-        if (egg) {
+        if (drop_area) {
           app.ui.clearIconMenu();
 
-          if (egg.chromos.length > 0) {
-            var ret = egg.chromos.pop();
+          if (drop_area.chromos.length > 0) {
+            var ret = drop_area.chromos.pop();
             app.ui.returnToContainer(ret, iconHomeScale);
           }
 
-          if (egg.chromos.length === 0) {
+          if (drop_area.chromos.length === 0) {
             undoHistory.pop();
 
-            app.ui.resetMenuOptions(egg);
+            app.ui.resetMenuOptions(drop_area);
 
-            egg.fill(circleFillColor);
-            egg.opacity(1.0);
+            drop_area.fill(drop_areaFillColor);
+            drop_area.opacity(1.0);
 
-            var str = egg.label.text();
+            var str = drop_area.label.text();
 
             var dipi = str.indexOf("\n(hap)");
             var hapi = str.indexOf("\n(dip)");
@@ -807,26 +470,26 @@ var app = {
 
             if (pos > 0) {
               str = str.substr(0, pos);
-              egg.label.setText(str);
+              drop_area.label.setText(str);
             }
 
-            if (egg.prev && !egg.prev.isPrecursor) {
-              egg.prev.opacity(1.0);
-              egg.prev.canswerId = null;
-              app.ui.toggleAllIconsDraggable(egg.prev, true);
+            if (drop_area.prev && !drop_area.prev.droppable) {
+              drop_area.prev.opacity(1.0);
+              drop_area.prev.canswerId = null;
+              app.ui.toggleAllIconsDraggable(drop_area.prev, true);
             }
-            if (egg.next) {
-              egg.next.opacity(unfocusedEggOpacity);
-              egg.next.canswerId = null;
-              app.ui.toggleAllIconsDraggable(egg.next, false);
+            if (drop_area.next) {
+              drop_area.next.opacity(unfocusedDropAreaOpacity);
+              drop_area.next.canswerId = null;
+              app.ui.toggleAllIconsDraggable(drop_area.next, false);
             }
 
             app.layer.batchDraw();
 
-            app.ui.focus(egg.next, {
+            app.ui.focus(drop_area.next, {
               focusOut: true,
               onComplete: function() {
-                app.ui.focus(egg, {
+                app.ui.focus(drop_area, {
                   focusOut: false,
                   reverseScroll: true
                 });
@@ -920,77 +583,70 @@ var app = {
         });
       },
 
-      toggleAllIconsDraggable: function(egg, draggable) {
-        if (!egg || !egg.chromos) return false;
+      toggleAllIconsDraggable: function(drop_area, draggable) {
+        if (!drop_area || !drop_area.chromos) return false;
 
         if (typeof draggable !== 'boolean') {
           draggable = true;
         }
 
-        egg.chromos.forEach(function(chrom) {
+        drop_area.chromos.forEach(function(chrom) {
           chrom.draggable(draggable);
         });
       },
 
-      placeInEgg: function(egg, pointerPos) {
-        //var w = app.currentDragObject.getWidth();
-        //var h = app.currentDragObject.getHeight();
+      placeInDropArea: function(drop_area, pointerPos) {
+        drop_area.canswerId = app.currentDragObject.answerId;
+        var prevDropArea = drop_area.prev;
 
-        egg.canswerId = app.currentDragObject.answerId;
-
-        //  app.currentDragObject.setWidth(w);
-        //    app.currentDragObject.setHeight(h);
-
-        var prevEgg = egg.prev;
-
-        if (prevEgg) {
-          if (prevEgg.chromos.length > 0 || prevEgg.isPrecursor) {
-            if (egg.next && egg.next === app.currentDragObject.inEgg) {
+        if (prevDropArea) {
+          if (prevDropArea.chromos.length > 0 || prevDropArea.droppable) {
+            if (drop_area.next && drop_area.next === app.currentDragObject.inDropArea) {
               return false;
             }
 
-            if (!prevEgg.isPrecursor) {
-            //  prevEgg.opacity(unfocusedEggOpacity);
+            if (!prevDropArea.droppable) {
+            //  prevDropArea.opacity(unfocusedDropAreaOpacity);
 
-              app.ui.toggleAllIconsDraggable(prevEgg, false);
+              app.ui.toggleAllIconsDraggable(prevDropArea, false);
             }
 
             if (app.ui.allIconsPlaced()) {
-              app.ui.toggleAllIconsDraggable(egg, true);
+              app.ui.toggleAllIconsDraggable(drop_area, true);
             }
 
-            egg.chromos.push(app.currentDragObject);
-            app.currentDragObject.inEgg = egg;
+            drop_area.chromos.push(app.currentDragObject);
+            app.currentDragObject.inDropArea = drop_area;
 
-            if (!egg.isPrecursor) undoHistory.push(egg);
+            if (!drop_area.droppable) undoHistory.push(drop_area);
 
             app.currentDragObject.setPlaced(true);
 
           }
         }
 
-        if (egg) {
-          $(egg).trigger('beforeEggTween', {
+        if (drop_area) {
+          $(drop_area).trigger('beforeDropAreaTween', {
             callback: function() {
               app.focusLayer.hide();
 
-              egg.moveToBottom();
+              drop_area.moveToBottom();
 
               if(DEBUG) {
                 console.log("Changing circle fill color to: "+app.currentDragObject.next_circle_bg_color);
                 console.log(app.currentDragObject);
               }
-              circleFillColor = app.currentDragObject.next_circle_bg_color;
+              drop_areaFillColor = app.currentDragObject.next_circle_bg_color;
 
               app.currentDragObject.sizeChanged = false;
               app.chromTween = new Konva.Tween({
                 node: app.currentDragObject,
                 duration: 0.1,
                 opacity: 1,
-                width: 47,
-                height: 47,
-                x: -70,
-                y: -70,
+                width: drop_area.placementOffset.w,
+                height: drop_area.placementOffset.h,
+                x: drop_area.placementOffset.x,
+                y: drop_area.placementOffset.y,
                 onFinish: function() {
                   app.layer.draw();
                   app.tempLayer.draw();
@@ -999,21 +655,21 @@ var app = {
               });
 
               app.chromTween.play();
-              app.ui.focus(egg, {
+              app.ui.focus(drop_area, {
                 focusOut: true,
                 onComplete: function() {
                   app.focusLayer.show();
 
-                  if (egg.next) {
+                  if (drop_area.next) {
 
-                    app.ui.updateIcons(egg.next);
-                    app.ui.focus(egg.next, {
+                    app.ui.updateIcons(drop_area.next);
+                    app.ui.focus(drop_area.next, {
                       focusOut: false,
                       onComplete: function() {
 
                       }
                     });
-                    egg.next.moveToTop();
+                    drop_area.next.moveToTop();
                   } else {
                     app.ui.playEndSequence(app.showDocumentLayout);
                     $("#download-pdf").show();
@@ -1029,11 +685,11 @@ var app = {
         return true;
       },
 
-      scrollPage: function(egg) {
-        if (!egg) return false;
+      scrollPage: function(drop_area) {
+        if (!drop_area) return false;
 
         var layerCentre = (app.layer.y() / 2);
-        var y = layerCentre < egg.group.y() ? -egg.group.y() / 20 : egg.group.y() / 20;
+        var y = layerCentre < drop_area.group.y() ? -drop_area.group.y() / 20 : drop_area.group.y() / 20;
         y = y * scrollDistance;
 
         app.tween = new Konva.Tween({
@@ -1057,13 +713,15 @@ var app = {
 
       },
       returnToContainer: function(icon, scaled) {
-
-        if (icon.getWidth() !== iconWidth) {
-          icon.setWidth(iconWidth * scaled);
+        console.log(icon);
+        if (icon.getWidth() !== icon.displayWidth) {
+          //icon.setWidth(iconWidth * scaled);
+          icon.setWidth(icon.displayWidth);
         }
 
         if (icon.getHeight() !== iconHeight) {
-          icon.setHeight(iconHeight * scaled);
+          //icon.setHeight(iconHeight * scaled);
+          icon.setHeight(iconHeight);
         }
 
         icon.moveTo(iconMenu.group);
@@ -1078,15 +736,15 @@ var app = {
         app.tempLayer.draw();
         app.staticLayer.draw();
 
-        if (icon.inEgg) {
-          icon.inEgg.chromos.remove(app.currentDragObject);
-          app.ui.checkForEmptyEgg(icon.inEgg);
+        if (icon.inDropArea) {
+          icon.inDropArea.chromos.remove(app.currentDragObject);
+          app.ui.checkForEmptyDropArea(icon.inDropArea);
         }
 
         icon.setPlaced(false);
 
-        if (icon.inEgg && icon.inEgg.prev) {
-          app.ui.updateIcons(icon.inEgg.prev);
+        if (icon.inDropArea && icon.inDropArea.prev) {
+          app.ui.updateIcons(icon.inDropArea.prev);
         }
 
         app.currentDragObject.sizeChanged = false;
@@ -1106,19 +764,19 @@ var app = {
 
         app.chromTween.play();
 
-        delete(icon.inEgg); // = null;
+        delete(icon.inDropArea); // = null;
       },
 
-      checkForEmptyEgg: function(egg) {
-        if (egg.chromos.length === 0) {
-          egg.fill(circleFillColor);
-          if (egg.next) {
-            egg.next.opacity(unfocusedEggOpacity);
+      checkForEmptyDropArea: function(drop_area) {
+        if (drop_area.chromos.length === 0) {
+          drop_area.fill(drop_areaFillColor);
+          if (drop_area.next) {
+            drop_area.next.opacity(unfocusedDropAreaOpacity);
           }
-          if (egg.prev) {
-            egg.prev.opacity(1.0);
+          if (drop_area.prev) {
+            drop_area.prev.opacity(1.0);
 
-            egg.prev.chromos.forEach(function(chrom) {
+            drop_area.prev.chromos.forEach(function(chrom) {
                   chrom.draggable(true);
             });
           }
@@ -1140,21 +798,21 @@ var app = {
           });
         }
       },
-      hideUnusedIcons: function(inx, seqStr, egg) {
+      hideUnusedIcons: function(inx, seqStr, drop_area) {
 
         var answerId = imageSources.sequences[seqStr].answerIds[inx];
         app.ui.icon.konvaWrappers[seqStr][inx].answerId = answerId;
 
         if (DEBUG) {
-          console.log("Next egg");
-          console.log(egg.next);
-          console.log("Prev egg");
-          console.log(egg.prev);
-          console.log("Current egg");
-          console.log(egg);
+          console.log("Next drop_area");
+          console.log(drop_area.next);
+          console.log("Prev drop_area");
+          console.log(drop_area.prev);
+          console.log("Current drop_area");
+          console.log(drop_area);
         }
 
-        var eggAnswer = egg.prev ? egg.prev.canswerId : egg.canswerId;
+        var drop_areaAnswer = drop_area.prev ? drop_area.prev.canswerId : drop_area.canswerId;
 
         var _node = app.ui.icon.konvaWrappers[seqStr][inx];
 
@@ -1166,15 +824,15 @@ var app = {
           console.log("Visible?: ");
           console.log(_node.visible());
         }
-        if (eggAnswer) {
+        if (drop_areaAnswer) {
           try {
-            if (imageSources.sequences[seqStr].links[eggAnswer].indexOf(answerId) === -1) {
+            if (imageSources.sequences[seqStr].links[drop_areaAnswer].indexOf(answerId) === -1) {
 
               if (DEBUG) {
-                if (egg.prev) {
-                  console.log("Prev: " + egg.prev.canswerId);
+                if (drop_area.prev) {
+                  console.log("Prev: " + drop_area.prev.canswerId);
                   console.log(" in > " + seqStr);
-                  console.log(imageSources.sequences[seqStr].links[eggAnswer].indexOf(answerId));
+                  console.log(imageSources.sequences[seqStr].links[drop_areaAnswer].indexOf(answerId));
                   console.log(' === ');
                   console.log(answerId);
                 }
@@ -1190,7 +848,7 @@ var app = {
           } catch (e) {
             if (DEBUG) {
               console.log(e);
-              console.log("Answer was: " + eggAnswer);
+              console.log("Answer was: " + drop_areaAnswer);
             }
           }
         }
@@ -1199,15 +857,15 @@ var app = {
 
         o.onComplete();
       },
-      updateIcons: function(egg) {
+      updateIcons: function(drop_area) {
         var sequence;
         if(DEBUG) {
             console.log("Home Scale on call: "+iconHomeScale);
         }
-        if (typeof egg === 'number') {
-          sequence = egg;
+        if (typeof drop_area === 'number') {
+          sequence = drop_area;
         } else {
-          sequence = egg.sequence;
+          sequence = drop_area.sequence;
         }
         var seqStr = app.sequences[sequence];
         loadCount[seqStr] = 0;
@@ -1215,7 +873,7 @@ var app = {
         if (!imageSources.sequences[seqStr]) return false;
 
         if(typeof imageSources.sequences[seqStr].next_circle_bg_color === 'undefined') {
-            imageSources.sequences[seqStr]["next_circle_bg_color"] = circleFillColor;
+            imageSources.sequences[seqStr].next_circle_bg_color = drop_areaFillColor;
             if(DEBUG) {
                 console.log("SET color: "+imageSources.sequences[seqStr].next_circle_bg_color);
             }
@@ -1232,16 +890,26 @@ var app = {
           var xchromPos = 45;
           var ychromPos = 178;
          //iconVSpacing;
-          var hSpace = 40; //cctXPos - iconHSpacing * 0.075;
+          var hSpace = 80; //cctXPos - iconHSpacing * 0.075;
 
           app.ui.icon.images = app.ui.icon.images || {};
           app.ui.icon.images[seqStr] = app.ui.icon.images[seqStr] || [];
 
           app.shuffle(imageSources.sequences[seqStr]);
-          var eggAnswer = egg.prev ? egg.prev.canswerId : egg.canswerId;
+          var drop_areaAnswer = drop_area.prev ? drop_area.prev.canswerId : drop_area.canswerId;
 
           if(DEBUG) {
               console.log("Icon array length: "+imageSources.sequences[seqStr].icons.length);
+          }
+          switch(imageSources.sequences[seqStr].iconWidth) {
+            case 300:
+              iconsPerRow = 2;
+            break;
+            case 580:
+              iconsPerRow = 1;
+            break;
+            default:
+              iconsPerRow = 4;
           }
 
           var ac = 0;
@@ -1250,27 +918,33 @@ var app = {
 
               var answerId = imageSources.sequences[seqStr].answerIds[inx];
               try {
-              if (!eggAnswer || imageSources.sequences[seqStr].links[eggAnswer].indexOf(answerId) !== -1) {
+              if (!drop_areaAnswer || imageSources.sequences[seqStr].links[drop_areaAnswer].indexOf(answerId) !== -1) {
                 if (DEBUG) {
                   console.log("Loading icon image: " + src);
                 }
                 ac = ac + 1;
                 app.ui.icon.images[seqStr][inx] = new Image();
-
+            //    console.log(app.ui.icon.images[seqStr][inx].naturalWidth);
+              if (DEBUG) {
+                console.log(imageSources.sequences[seqStr].iconWidth);
+              }
                 app.ui.icon.konvaWrappers[seqStr][inx] = new Konva.Image({
                   x: xchromPos,
                   y: ychromPos,
                   image: app.ui.icon.images[seqStr][inx],
-                  width: iconWidth,
+                  width: imageSources.sequences[seqStr].iconWidth,
                   height: iconHeight,
                   name: 'chromosome_' + inx,
                   draggable: true,
                   fill: 'transparent'
                 });
-
+                app.ui.icon.konvaWrappers[seqStr][inx].displayWidth = imageSources.sequences[seqStr].iconWidth;
                 app.ui.icon.konvaWrappers[seqStr][inx].sequence = sequence;
                 app.ui.icon.konvaWrappers[seqStr][inx].answerId = answerId;
-
+                if (DEBUG) {
+                    console.log("Sequence 1017");
+                    console.log(app.ui.icon.konvaWrappers[seqStr][inx].sequence);
+                }
                 app.ui.icon.konvaWrappers[seqStr][inx].next_circle_bg_color = imageSources.sequences[seqStr].next_circle_bg_color;
 
                 app.ui.icon.konvaWrappers[seqStr][inx].setHomePos({
@@ -1280,6 +954,9 @@ var app = {
                 app.ui.icon.konvaWrappers[seqStr][inx].setUIComponentType('icon');
 
                 app.ui.icon.images[seqStr][inx].onload = function(e) {
+
+                  app.ui.icon.konvaWrappers[seqStr][inx].naturalWidth = this.naturalWidth;
+
                   loadCount[seqStr] = loadCount[seqStr] + 1;
                   iconMenu.group.add(app.ui.icon.konvaWrappers[seqStr][inx]);
                   app.ui.icon.konvaWrappers[seqStr][inx].draw();
@@ -1294,8 +971,8 @@ var app = {
 
                 };
 
-                var vSpace = (iconHeight / 2) + 3;
-                xchromPos += iconWidth;
+                var vSpace = 170
+                xchromPos += imageSources.sequences[seqStr].iconWidth;
                 if(DEBUG) {
                   console.log("Index count: "+inx);
                 }
@@ -1317,17 +994,17 @@ var app = {
               console.log("AC count: "+ac);
           }
 
-          if(ac > iconsPerRow) {
+        /*  if(ac > iconsPerRow) {
               iconHomeScale = 0.5;
           } else {
               iconHomeScale = 1;
-          }
+          }*/
 
           if(DEBUG) {
               console.log("Konva length: "+app.ui.icon.konvaWrappers[seqStr].length);
           }
 
-          app.ui.icon.konvaWrappers[seqStr].forEach(function(o, i) {
+  /*        app.ui.icon.konvaWrappers[seqStr].forEach(function(o, i) {
               //  o.sizeChangeOnDrop = iconHomeScale + 1;
                 //o.hSpacing = i > 0 ? hSpace * iconHomeScale : 0;
                 if(DEBUG) {
@@ -1341,12 +1018,14 @@ var app = {
                 if(iconHomeScale < 1 && i > 1 && i % (iconsPerRow + 1) !== 0) {
                     o.setX(o.x() + hSpace / 2);
                 }
-          });
+          });*/
+
           if(DEBUG) {
               console.log("Home Scale: "+iconHomeScale);
           }
+
           app.ui.icon.images[seqStr].forEach(function(img, inx) {
-            app.ui.icon.images[seqStr][inx].src = urlBase + imageSources.sequences[seqStr].icons[inx];
+              app.ui.icon.images[seqStr][inx].src = urlBase + imageSources.sequences[seqStr].icons[inx];
           });
 
         } else {
@@ -1357,19 +1036,19 @@ var app = {
             }
 
             icon.show();
-            //  if(egg.next) {
-            app.ui.hideUnusedIcons(inx, seqStr, egg);
+            //  if(drop_area.next) {
+            app.ui.hideUnusedIcons(inx, seqStr, drop_area);
             //  }
           });
         }
 
-        if (focusedEgg.group.startingPosition && sequence == 1) {
-          app.ui.focus(focusedEgg);
+        if (focusedDropArea.group.startingPosition && sequence == 1) {
+          app.ui.focus(focusedDropArea);
         }
       },
       focusing: false,
-      focus: function(thisEgg, params) {
-        if (!thisEgg.group.startingPosition) return false;
+      focus: function(thisDropArea, params) {
+        if (!thisDropArea.group.startingPosition) return false;
         if (app.ui.focusing) return false;
 
         if (!params) {
@@ -1380,62 +1059,61 @@ var app = {
           };
         }
 
-        if (!thisEgg) return false;
+        if (!thisDropArea) return false;
 
         var x;
         var y;
 
-        x = params.focusOut ? thisEgg.group.startingPosition.x : focusPositionX;
-        y = params.focusOut ? thisEgg.group.startingPosition.y : focusPositionY;
+        x = params.focusOut ? thisDropArea.group.startingPosition.x : thisDropArea.focusPosition.x;
+        y = params.focusOut ? thisDropArea.group.startingPosition.y : thisDropArea.focusPosition.y;
+
+        console.log("FOCUS POS: x: "+x+" y: "+y);
 
         if (params.focusOut) {
-          thisEgg.group.moveTo(app.layer);
+          thisDropArea.group.moveTo(app.layer);
         } else {
-          thisEgg.group.moveTo(app.focusLayer);
+          thisDropArea.group.moveTo(app.focusLayer);
         }
 
         //if(app.currentDragObject)
         //console.log("Current parent before focus tween "+app.currentDragObject.parent.attrs.name);
 
         app.focusLayer.moveToTop();
-        app.recOpacity(thisEgg.group, 1);
-        thisEgg.group.moveToTop();
+        app.recOpacity(thisDropArea.group, 1);
+        thisDropArea.group.moveToTop();
 
-        app.ui.scrollPage(params.reverseScroll ? thisEgg.prev : thisEgg.next);
+        app.ui.scrollPage(params.reverseScroll ? thisDropArea.prev : thisDropArea.next);
 
         app.safeLabel = null;
 
-        if (thisEgg.label) {
-          app.safeLabel = thisEgg.label;
-        } else if (thisEgg.next.label) {
-          app.safeLabel = thisEgg.next.label;
-          app.safeLabel.moveTo(thisEgg.next.group);
+        if (thisDropArea.label) {
+          app.safeLabel = thisDropArea.label;
+        } else if (thisDropArea.next.label) {
+          app.safeLabel = thisDropArea.next.label;
+          app.safeLabel.moveTo(thisDropArea.next.group);
         }
 
-        app.eggTween = new Konva.Tween({
-          node: thisEgg,
+        app.drop_areaTween = new Konva.Tween({
+          node: thisDropArea,
           duration: 0.1,
-          fill: circleFillColor,
-          opacity: params.focusOut ? unfocusedEggOpacity : 1,
+          fill: drop_areaFillColor,
+          opacity: params.focusOut ? unfocusedDropAreaOpacity : 1,
           onFinish: function() {
             if (app.safeLabel) {
-              app.safeLabel.moveTo(thisEgg.group);
+              app.safeLabel.moveTo(thisDropArea.group);
             }
             iconMenu.setListening(true);
-            //  resetButton.setListening(true);
-            //  undoButton.setListening(true);
-            //  app.tweenIsPlaying = false;
 
-            delete(app.eggTween);
+            delete(app.drop_areaTween);
             delete(app.safeLabel);
             delete(app.groupTween);
           }
         });
 
-        app.playEggTween = function() {
-          if (app.eggTween) {
+        app.playDropAreaTween = function() {
+          if (app.drop_areaTween) {
 
-            app.eggTween.play();
+            app.drop_areaTween.play();
 
           }
 
@@ -1446,15 +1124,15 @@ var app = {
           var s = app.safeLabel.text();
           var c = (s.match(/\n/g) || []).length;
 
-          var n = 67 - (12 * c);
+          var n = thisDropArea.focusLabelPosition.y - (12 * c);
 
           app.textTween = new Konva.Tween({
             node: app.safeLabel,
             duration: 0.1,
-            x: params.focusOut ? app.safeLabel.startingPosition.x : -140.5, //text.x() - 100,
+            x: params.focusOut ? app.safeLabel.startingPosition.x : thisDropArea.focusLabelPosition.x,
             y: params.focusOut ? app.safeLabel.startingPosition.y : n,
             onFinish: function() {
-              app.playEggTween();
+              app.playDropAreaTween();
             }
           });
         }
@@ -1466,16 +1144,20 @@ var app = {
         }
 
         app.groupTween = new Konva.Tween({
-          node: thisEgg.group,
+          node: thisDropArea.group,
           duration: 0.5,
           x: x,
           y: y,
           easing: Konva.Easings.BackEaseIn,
-          opacity: params.focusOut ? unfocusedEggOpacity : 1,
-          scaleX: params.focusOut ? 1 : circleFocusMultiplier,
-          scaleY: params.focusOut ? 1 : circleFocusMultiplier,
+          opacity: params.focusOut ? unfocusedDropAreaOpacity : 1,
+          scaleX: params.focusOut ? 1 : thisDropArea.focusMultiplier,
+          scaleY: params.focusOut ? 1 : thisDropArea.focusMultiplier,
           onFinish: function() {
-            thisEgg.cache();
+
+            if(!params.focusOut) {
+              //  thisDropArea.cache();
+            }
+
             app.textTween.play();
 
             if (params.onComplete) {
@@ -1492,7 +1174,7 @@ var app = {
 
         }, 50);
 
-        focusedEgg = thisEgg;
+        focusedDropArea = thisDropArea;
 
         return this;
       },
@@ -1542,6 +1224,9 @@ var app = {
           return this.uiComponentType;
         };
 
+        Konva.Image.prototype.naturalWidth = null;
+        Konva.Image.prototype.displayWidth = null;
+
         Konva.Image.prototype.sizeChanged = false;
         Konva.Node.prototype.sequence = 0;
 
@@ -1559,40 +1244,49 @@ var app = {
         Konva.Group.prototype.startingPosition = null;
         Konva.Image.prototype.answerId = null;
 
-        Konva.Circle.prototype.canswerId = null;
-
-        // egg settings
-        Konva.Circle.prototype.initEgg = function(params) {
+        Konva.Shape.prototype.canswerId = null;
+        Konva.Shape.prototype.focusPosition = null;
+        Konva.Shape.prototype.droppable = true;
+        Konva.Shape.prototype.focusMultiplier = 2.65;
+        Konva.Shape.prototype.placementOffset = { x: 0, y: 0, w: 40, h: 40};
+        Konva.Shape.prototype.focusLabelPosition = { x: -80, y: 67};
+        // drop_area settings
+        Konva.Shape.prototype.initDropArea = function(params) {
           this.chromos = params.chromos;
           this.next = params.next;
           this.prev = params.prev;
-          var egg = this;
+          var drop_area = this;
 
           this.group = new Konva.Group({
             x: params.x,
             y: params.y,
-            name: egg.name() + '_group',
-            id: egg.name() + '_group'
+            name: drop_area.name() + '_group',
+            id: drop_area.name() + '_group'
           });
 
           if (DEBUG) {
             console.log("added");
-            console.log(egg.name());
+            console.log(drop_area.name());
+            console.log("FP: ");
+            console.log(params.focusPosition);
           }
           this.group.startingPosition = {
             x: params.x,
             y: params.y
           };
-          if (this.isPrecursor) {
+
+          this.focusPosition = params.focusPosition;
+
+          if (!this.droppable) {
             app.staticLayer.add(this.group);
           } else {
             app.layer.add(this.group);
           }
-          this.group.add(egg);
+          this.group.add(drop_area);
 
-          $(this).on("beforeEggTween", function(e, o) {
-            $(app.stage).trigger('touchEgg', {
-              egg: e.target,
+          $(this).on("beforeDropAreaTween", function(e, o) {
+            $(app.stage).trigger('touchDropArea', {
+              drop_area: e.target,
               callback: o.callback
             });
           });
@@ -1600,10 +1294,10 @@ var app = {
           return this.group;
         };
 
-        Konva.Circle.prototype.isPrecursor = false;
-        Konva.Circle.prototype.scrollPageOnDrop = null;
-        Konva.Circle.prototype.group = null;
-        Konva.Circle.prototype.label = null;
+      //  Konva.Shape.prototype.droppable = false;
+        Konva.Shape.prototype.scrollPageOnDrop = null;
+        Konva.Shape.prototype.group = null;
+        Konva.Shape.prototype.label = null;
 
         Konva.Text.prototype.startingPosition = null;
       }
@@ -1617,14 +1311,9 @@ var app = {
       }
     });
 
-    //staticLayer.clearBeforeDraw(false);
-    //staticLayer.draw();
-
     var text = new Konva.Text({
       fill: 'black'
     });
-
-    //layer.add(text);
 
     // setup chromosome container
     var iconMenu = new Konva.Rect({
@@ -1663,17 +1352,35 @@ var app = {
         app.staticLayer.add(precursor);
       };
     };
-    // setup egg interface
+    // setup drop_area interface
     var yoff = 35;
     var opacity;
-    var eggMap = [];
+    var drop_areaMap = [];
     var precursorImg = new Image();
     var precursor;
-    var previousEgg;
+    var previousDropArea;
 
-    for (var i = 0; i < 14; i++) {
-      var x;
-      var y;
+    let newCircleDropArea = function(params) {
+      return new Konva.Circle({
+        radius: circleDiameter / 2,
+        stroke: drop_areaStrokeColor,
+        name: 'drop_area_' + params.i,
+        id: 'drop_area_' + params.i,
+        opacity: opacity,
+        fill: drop_areaFillColor,
+      });
+
+    };
+
+    let drop_area;
+    let focusPos = {};
+    for (let i = 0; i < app.sequences.length; i++) {
+      opacity = i > 1 ? unfocusedDropAreaOpacity : 1.0;
+
+      let x;
+      let y;
+      console.log("sequences: "+i);
+
 
       if (i === 0) {
         x = 109;
@@ -1683,29 +1390,78 @@ var app = {
         var pY = y;
 
         setPrecursor(pX, pY, i);
+        drop_area = newCircleDropArea({x: x, y: y, i:i});
+      } else if(i < 4) {
+        x = problemPosFormula - 125;
+        y = circleDiameter + yoff + topOffset;
+        yoff += drop_areaSpace;
+            drop_area = new Konva.Image({
+                name: 'drop_area_' + i,
+                id: 'drop_area_' + i,
+                opacity: opacity,
+                fill: drop_areaFillColor,
+                width: 100,
+                height: 100,
+            });
+      } else if(i > 3 && i < 7) {
+        x = problemPosFormula - 250 ;
+        y = circleDiameter + yoff + topOffset;
 
-      } else if (i < 4) {
-        x = problemPosFormula - (circleDiameter / 2);
+        yoff += drop_areaSpace + 30;
+
+        /*drop_area = new Konva.Rect({
+          width: 350,
+          height: 160,
+          stroke: drop_areaStrokeColor,
+          name: 'drop_area_' + i,
+          id: 'drop_area_' + i,
+          opacity: opacity,
+          fill: drop_areaFillColor,
+
+        });*/
+
+        drop_area = new Konva.Image({
+          //stroke: drop_areaStrokeColor,
+          name: 'drop_area_' + i,
+          id: 'drop_area_' + i,
+          opacity: opacity,
+          fill: drop_areaFillColor,
+          width: 350,
+          height: 160,
+        });
+
+        drop_area.focusMultiplier = 1.1;
+        drop_area.placementOffset = {x: 0, y:0, w: 300, h: 150};
+        drop_area.focusLabelPosition.x = -140;
+        drop_area.focusLabelPosition.y = 90;
+      } else {
+        x = problemPosFormula - 422;
         y = circleDiameter + yoff + topOffset;
-        yoff += circleSpace;
-      }
-     /* even no'd eggs on left (change order of === 0,1
-     to change starting on an even or odd)*/
-      else if (i < 10 && i % 2 === 0) {
-        x = problemPosFormula - circleDiameter * 1.9;
-        y = circleDiameter + yoff + topOffset;
-      } else if (i < 10 && i % 2 === 1) {     // odd no'd eggs on right
-        x = problemPosFormula + circleDiameter * 0.9;
-        yoff += circleSpace;
-      } else if (i == 10) {
-        x = problemPosFormula - circleDiameter * 2.8;
-        y = circleDiameter + yoff + topOffset;
-      } else if (i == 11) {
-        x = problemPosFormula - circleDiameter * 1.1;
-      } else if (i == 12) {
-        x = problemPosFormula + circleDiameter * 0.1;
-      } else if (i == 13) {
-        x = problemPosFormula + circleDiameter * 1.8;
+        yoff += drop_areaSpace;
+
+      /*  drop_area = new Konva.Rect({
+          width: 700,
+          height: 160,
+          stroke: drop_areaStrokeColor,
+          name: 'drop_area_' + i,
+          id: 'drop_area_' + i,
+          opacity: opacity,
+          fill: drop_areaFillColor,
+        });*/
+
+        drop_area = new Konva.Image({
+          //stroke: drop_areaStrokeColor,
+          name: 'drop_area_' + i,
+          id: 'drop_area_' + i,
+          opacity: opacity,
+          fill: drop_areaFillColor,
+          width: 700,
+          height: 160,
+        });
+          drop_area.focusMultiplier = 1.0;
+          drop_area.placementOffset = {x: 42, y:0, w: 615, h: 150};
+          drop_area.focusLabelPosition.x = 0;
+          drop_area.focusLabelPosition.y = -20;
       }
 
       if(DEBUG) {
@@ -1713,60 +1469,55 @@ var app = {
           console.log("X: "+x+" Y:"+y);
       }
 
-      opacity = i > 1 ? unfocusedEggOpacity : 1.0;
+      drop_area.droppable = i > 0;
+      drop_area.sequence = i == 4 || i == 5 ? 5 : i;
+      drop_area.scrollPageOnDrop = 'down';
 
-      var egg = new Konva.Circle({
-        radius: (circleDiameter / 2) * circleFocusMultiplier,
-        stroke: circleStrokeColor,
-        scaleX: 1 / circleFocusMultiplier,
-        scaleY: 1 / circleFocusMultiplier,
-        name: 'egg_' + i,
-        id: 'egg_' + i,
-        opacity: opacity,
-        fill: circleFillColor,
-      });
+      if(drop_area.droppable && imageSources.sequences[app.sequences[i]]) {
+          focusPos =   {
+                x: imageSources.sequences[app.sequences[i]].focusPositionX,
+                y: imageSources.sequences[app.sequences[i]].focusPositionY
+          };
+      }
 
-      egg.isPrecursor = i < 1;
-      egg.sequence = i == 4 || i == 5 ? 5 : i;
-      egg.scrollPageOnDrop = 'down';
-
-      egg.initEgg({
+      drop_area.initDropArea({
         next: null,
-        prev: previousEgg,
+        prev: previousDropArea,
         chromos: [],
         x: x,
-        y: y
+        y: y,
+        focusPosition: focusPos
       });
-      app.ui.setEggLabel(i, egg, 0, 0);
 
-      if (previousEgg && egg) {
-        previousEgg.next = egg;
+      app.ui.setDropAreaLabel(i, drop_area, 0, 0);
+
+      if (previousDropArea && drop_area) {
+        previousDropArea.next = drop_area;
       }
 
-      previousEgg = egg;
+      previousDropArea = drop_area;
 
-      egg.group.moveToBottom();
+      drop_area.group.moveToBottom();
 
-      egg.cache();
+    //  drop_area.cache();
 
       if (i === 1) {
-        focusedEgg = egg;
+        focusedDropArea = drop_area;
       }
 
-      egg = null;
+      drop_area = null;
     }
 
     precursorImg.src = urlBase + imageSources.precursor;
 
     app.ui.updateIcons(1);
-    //app.ui.focus(focusedEgg);
+    //app.ui.focus(focusedDropArea);
 
     app.stage.add(app.staticLayer, app.layer, app.focusLayer, app.tempLayer);
 
-
     app.layer.setListening(false);
 
-    // hide all eggs
+    // hide all drop_areas
     app.layer.children.forEach(
       function(n) {
         n.opacity(0);
@@ -1892,7 +1643,7 @@ var app = {
 
       if (shape) {
         if (shape.opacity() === 1.0) {
-          if (shape instanceof Konva.Circle || (shape && shape.inEgg && shape.name() !== 'container')) {
+          if (shape.name().indexOf('drop_area') !== -1) {
 
             previousShape.fire('drop', {
               type: 'drop',
@@ -1924,10 +1675,9 @@ var app = {
     app.stage.on("dragleave", function(e) {
       if (e.target.opacity < interactableThresholdOpacity) return false;
 
-      if (e.target instanceof Konva.Circle) {
-        e.target.fill(circleFillColor);
-        //    text.text('dragleave ' + e.target.name());
-        //layer.draw();
+      if (e.target.name().indexOf('drop_area') !== -1) {
+        e.target.fill(drop_areaFillColor);
+
       }
     });
 
@@ -1941,19 +1691,19 @@ var app = {
       }
 
       if (app.sizeChangeOnDrop && !app.currentDragObject.sizeChanged) {
-        app.currentDragObject.setScaleX(app.currentDragObject.scaleX() * app.sizeChangeOnDrop);
-        app.currentDragObject.setScaleY(app.currentDragObject.scaleY() * app.sizeChangeOnDrop);
+        app.currentDragObject.setScaleX(app.currentDragObject.scaleX() * e.target.focusMultiplier);
+        app.currentDragObject.setScaleY(app.currentDragObject.scaleY() * e.target.focusMultiplier);
 
         app.currentDragObject.sizeChanged = true;
 
       }
 
-      app.currentDragObject.setX(app.stage.getPointerPosition().x - ((app.currentDragObject.width() / 2) * app.sizeChangeOnDrop));
-      app.currentDragObject.setY(app.stage.getPointerPosition().y - ((app.currentDragObject.height() / 2) * app.sizeChangeOnDrop));
+      app.currentDragObject.setX(app.stage.getPointerPosition().x - ((app.currentDragObject.width() / 2) * e.target.focusMultiplier));
+      app.currentDragObject.setY(app.stage.getPointerPosition().y - ((app.currentDragObject.height() / 2) * e.target.focusMultiplier));
 
-      if (e.target instanceof Konva.Circle) {
+      if (e.target.name().indexOf('drop_area') !== -1) {
 
-        e.target.fill(circleHoverColor);
+        e.target.fill(drop_areaHoverColor);
         //  text.text('dragover ' + e.target.name());
 
         app.focusLayer.draw();
@@ -1970,8 +1720,8 @@ var app = {
         return;
       }
 
-      if (e.target instanceof Konva.Circle) {
-        if (!app.ui.placeInEgg(e.target, pointerPos)) {
+      if (e.target.name().indexOf('drop_area') !== -1) {
+        if (!app.ui.placeInDropArea(e.target, pointerPos)) {
           app.ui.returnToContainer(app.currentDragObject, iconHomeScale);
         }
       }
@@ -2026,43 +1776,21 @@ var app = {
         }
       }
     });
-    /*app.stage.on("touchend mouseup", function(e){
-          if(e.target.opacity() < interactableThresholdOpacity) {
-              return false;
-          }
-
-          var shape = e.target;
-          if(shape && typeof shape.getUIComponentType === 'function') {
-              if(shape.getUIComponentType() === 'button') {
-                  var name = shape.name();
-                  switch(name) {
-                        case 'undo':
-                            app.ui.undo();
-                        break;
-                        case 'reset':
-                            window.location.reload();
-                  }
-
-                  shape.fill(buttonFillColor);
-                  app.staticLayer.draw();
-              }
-          }
-    });*/
 
     // jquery events
-    $(app.stage).on('touchEgg', function(e, args) {
+    $(app.stage).on('touchDropArea', function(e, args) {
       $("#labelme").show();
       $("#undo, #reset, #pdf").addClass("disabled").prop("disabled", true);
 
       $("#labelme input").on('change', function(e) {
-        if (!args.egg.label) {
-          args.egg.label = $(args.egg.label).clone(args.egg.next.label);
-          app.safeLabel = args.egg.label;
+        if (!args.drop_area.label) {
+          args.drop_area.label = $(args.drop_area.label).clone(args.drop_area.next.label);
+          app.safeLabel = args.drop_area.label;
         }
 
-        var str = args.egg.label.text();
+        var str = args.drop_area.label.text();
         var type = $(e.target).prop('id');
-        args.egg.label.text(str + "\n(" + type + ")");
+        args.drop_area.label.text(str + "\n(" + type + ")");
         args.callback();
 
         $("#undo, #reset, #pdf").removeClass("disabled").prop("disabled", false);
@@ -2084,11 +1812,13 @@ $(document).on('docReady', "#container", function() {
   app.focusLayer.hide();
   app.tempLayer.hide();
 
-  for (var i = 0; i < 14; i++) {
-    var egg = app.stage.find("#egg_" + i)[0];
-    egg.opacity(1.0);
-    egg.group.opacity(1.0);
-    egg.group.moveToTop();
+  for (var i = 0; i < app.sequences.length; i++) {
+    var drop_area = app.stage.find("#drop_area_" + i)[0];
+        if(drop_area) {
+            drop_area.opacity(1.0);
+            drop_area.group.opacity(1.0);
+            drop_area.group.moveToTop();
+        }
   }
 
   app.prevLayerY = app.layer.y();
@@ -2141,7 +1871,7 @@ $(document).on('docReady', "#container", function() {
 
   app.run();
   if (DEBUG) {
-    //  app.ui.playEndSequence(app.showDocumentLayout);
+    //app.ui.playEndSequence(app.showDocumentLayout);
   }
 }).on("click", "#undo", function(e) {
   app.ui.undo();
@@ -2167,3 +1897,4 @@ $(document).on('docReady', "#container", function() {
   $("#download-pdf").hide();
   $("#container").trigger("docReady");
 });
+})();

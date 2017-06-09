@@ -33,9 +33,9 @@ iframe#konva_portal {
 }
 #container {
   max-width: 635px;
-  max-height: 665px;
+/*  max-height: 665px; */
   width: 635px;
-  height: 640px;
+  height: 4000px;
   border: thin solid #ddd;
   overflow: hidden;
   background-color: #F7DFAE;
