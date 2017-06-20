@@ -10,7 +10,7 @@
 require('konva');
 require('bootstrap');
 
-var DEBUG = true;
+var DEBUG = false;
 
 var app = {
   run: function() {
@@ -18,14 +18,14 @@ var app = {
     app.sizeChangeOnDrop = 3;
 
     var width = 800;
-    var height = 2000;
+    var height = 955;
     var circleDiameter = 145;
     var drop_areaSpace = 155;
 
     var borderColor = '#896724';
-    var drop_areaFillColor = '#eed'; //'rgb(201,200,184)'; //'rgba(254,255,173,0.8)';
+    var drop_areaFillColor = "#fd8";
     var drop_areaDropColor = '#eed'; //'#DAD7C5';
-    var drop_areaHoverColor = '#EEE'; //'rgb(117,128,194)';
+    var drop_areaHoverColor = 'transparent'; //'rgb(117,128,194)';
     var drop_areaStrokeColor = 'black';
 
     //var drop_areaFocusMultiplier = 2.65;
@@ -46,13 +46,13 @@ var app = {
 
     var containerFill = '#FFF1D6'; //'rgb(201,200,184)';
     var containerStroke = 'black';
-    var containerHeight = 800;
+    var containerHeight = 500;
     var containerX = -21;
     var containerY = 280;
     var containerWidth = 615;
 
     var precursorX = 33;
-    var precursorY = 13;
+    var precursorY = 112;
 
     //- (iconWidth * 0.25);
     var rightLabelOffset = 300; //-(drop_areaSpace / 2);
@@ -70,23 +70,23 @@ var app = {
         text: 'Precursor Germ cells'
       },
       {
-        x: 0,//rightLabelOffset,
-        y: 0,
+        x: 175,
+        y: 55,
         text: 'Prophase I'
       },
       {
-        x: 0,//drop_areaSpace + rightLabelOffset,
-        y: 0,
+        x: 175,
+        y: 55,
         text: 'Metaphase I'
       },
       {
-        x: 0,
-        y: 0,
+        x: 175,//rightLabelOffset,
+        y: 55,
         text: 'Anaphase I'
       },
       {
-        x: 0,
-        y: 0,
+        x: 325,//rightLabelOffset,
+        y: 35,
         text: 'Prophase II'
       },
       /*{
@@ -95,8 +95,8 @@ var app = {
         text: 'Prophase II\n Centriole 2'
       },*/
       {
-        x: 0,
-        y: 0,
+        x: 325,//rightLabelOffset,
+        y: 35,
         text: 'Metaphase II'
       },
     /*  {
@@ -105,14 +105,14 @@ var app = {
         text: 'Metaphase II\n Centriole 2'
       },*/
       {
-        x: 0,
-        y: 0,
+        x: 325,//rightLabelOffset,
+        y: 35,
         text: 'Anaphase II'
       },
 
       {
-        x: 0,
-        y: 0,
+        x: 625,
+        y: 35,
         text: 'Final Gamete'
       }
     ];
@@ -128,7 +128,8 @@ var app = {
             'img/Prophase 1/Prophase-1 -B version-80.png',
             'img/Prophase 1/Ptophase-1 -C- version-80.png'
           ],
-          answerIds: ['c', 'x1', 'x2']
+          answerIds: ['c', 'x1', 'x2'],
+            background: 'img/Hints/Prophase 1 greyscale.png',
         },
         METAPHASE_I: {
           // links to previous answers
@@ -151,6 +152,7 @@ var app = {
             'img/Metaphase 1/Cii-Metaphase-1-80.png',
             'img/Metaphase 1/Ciii-Metaphase-1-80.png'
           ],
+          background: 'img/Hints/Metaphase 1 greyscale.png',
           answerIds: ['c1', 'c2', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7'],
         },
         ANAPHASE_I: {
@@ -180,6 +182,7 @@ var app = {
             'img/Anaphase 1/Cii-Anaphase-1-80.png',
             'img/Anaphase 1/Ciii-Anaphase-1-80.png'
           ],
+          background: 'img/Hints/Anaphase 1 greyscale.png',
           answerIds: ['c1', 'c2', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7'],
         },
 
@@ -195,9 +198,9 @@ var app = {
             x6: ['x5', 'x6', 'x7'],
             x7: ['x5', 'x6', 'x7'],
           },
-          iconWidth: 300,
-          focusPositionX: 240,
-          focusPositionY: 95,
+          iconWidth: 307,
+          focusPositionX: 15,
+          focusPositionY: 55,
           icons: ['img/Prophase 11/Ai Prophase 11 - 1 2.png',
               'img/Prophase 11/Aii Prophase 11 - 1 2.png',
               'img/Prophase 11/Aiii Prophase 11 - 1 2.png',
@@ -208,6 +211,7 @@ var app = {
               'img/Prophase 11/Cii Prophase 11 - 1 2.png',
               'img/Prophase 11/Ciii Prophase 11 - 1 2.png',
             ],
+          background: 'img/Hints/Prophase 11 greyscale.png',
           answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
         },
       /*  PROPHASE_II_B: {
@@ -257,8 +261,8 @@ var app = {
             x7: ['x5', 'x6', 'x7'],
           },
           iconWidth: 300,
-          focusPositionX: 240,
-          focusPositionY: 95,
+          focusPositionX: 15,
+          focusPositionY: 55,
           icons: ['img/Metaphase 11/Ai Metaphase 11 - 1 2.png',
             'img/Metaphase 11/Aii Metaphase 11 - 1 2.png',
             'img/Metaphase 11/Aiii Metaphase 11 - 1 2.png',
@@ -269,12 +273,13 @@ var app = {
             'img/Metaphase 11/Cii Metaphase 11 - 1 2.png',
             'img/Metaphase 11/Ciii Metaphase 11 - 1 2.png',
           ],
+          background: 'img/Hints/Metaphase 11 greyscale.png',
           answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
         },
         ANAPHASE_II: {
           iconWidth: 300,
-          focusPositionX: 240,
-          focusPositionY: 95,
+          focusPositionX: 15,
+          focusPositionY: 55,
           links: {
             c1: ['c1', 'c2', 'x1'],
             c2: ['c1', 'c2', 'x3'],
@@ -296,12 +301,13 @@ var app = {
           'img/Anaphase 11/Cii Anaphase 11 - 1 2.png',
           'img/Anaphase 11/Ciii Anaphase 11 - 1 2.png',
           ],
+          background: 'img/Hints/Anaphase 11 greyscale.png',
             answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
         },
         FINAL_GAMETES: {
-          iconWidth: 580,
-          focusPositionX: 30,
-          focusPositionY: 270,
+          iconWidth: 615,
+          focusPositionX: 15,
+          focusPositionY: 55,
           links: {
             c1: ['c1', 'c2', 'x1'],
             c2: ['c1', 'c2', 'x3'],
@@ -324,7 +330,8 @@ var app = {
           'img/Final Gametes/Cii Gamete 11 - 1a 1b 2a 2b.png',
           'img/Final Gametes/Ciii Gamete 11 - 1a 1b 2a 2b.png',
           ],
-          answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
+          answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7'],
+          background: 'img/Hints/Gamete 11 gs.png',
         }
       }
     };
@@ -443,7 +450,20 @@ var app = {
       },
 
       undo: function() {
+
         var drop_area = undoHistory[undoHistory.length - 1];
+
+        if(drop_area.sequence < 4) {
+            precursor.show();
+            precursor.drop_area.show();
+            precursor.drop_area.label.show();
+          //  precursor.group.show();
+        } else {
+            precursor.hide();
+            precursor.drop_area.hide();
+            precursor.drop_area.label.hide();
+          //  precursor.group.hide();
+        }
 
         if (drop_area) {
           app.ui.clearIconMenu();
@@ -458,7 +478,7 @@ var app = {
 
             app.ui.resetMenuOptions(drop_area);
 
-            drop_area.fill(drop_areaFillColor);
+          //  drop_area.fill(drop_areaFillColor);
             drop_area.opacity(1.0);
 
             var str = drop_area.label.text();
@@ -489,6 +509,7 @@ var app = {
             app.ui.focus(drop_area.next, {
               focusOut: true,
               onComplete: function() {
+
                 app.ui.focus(drop_area, {
                   focusOut: false,
                   reverseScroll: true
@@ -598,6 +619,21 @@ var app = {
       placeInDropArea: function(drop_area, pointerPos) {
         drop_area.canswerId = app.currentDragObject.answerId;
         var prevDropArea = drop_area.prev;
+        //console.log(drop_area);
+
+        //console.log("DROP INDEX: "+drop_area.sequence);
+
+        if(drop_area.sequence < 3) {
+            precursor.show();
+            precursor.drop_area.show();
+            precursor.drop_area.label.show();
+          //  precursor.group.show();
+        } else {
+            precursor.hide();
+            precursor.drop_area.hide();
+            precursor.drop_area.label.hide();
+          //  precursor.group.hide();
+        }
 
         if (prevDropArea) {
           if (prevDropArea.chromos.length > 0 || prevDropArea.droppable) {
@@ -606,8 +642,6 @@ var app = {
             }
 
             if (!prevDropArea.droppable) {
-            //  prevDropArea.opacity(unfocusedDropAreaOpacity);
-
               app.ui.toggleAllIconsDraggable(prevDropArea, false);
             }
 
@@ -618,10 +652,9 @@ var app = {
             drop_area.chromos.push(app.currentDragObject);
             app.currentDragObject.inDropArea = drop_area;
 
-            if (!drop_area.droppable) undoHistory.push(drop_area);
+            if (drop_area.droppable) undoHistory.push(drop_area);
 
             app.currentDragObject.setPlaced(true);
-
           }
         }
 
@@ -636,12 +669,11 @@ var app = {
                 console.log("Changing circle fill color to: "+app.currentDragObject.next_circle_bg_color);
                 console.log(app.currentDragObject);
               }
-              drop_areaFillColor = app.currentDragObject.next_circle_bg_color;
 
               app.currentDragObject.sizeChanged = false;
               app.chromTween = new Konva.Tween({
                 node: app.currentDragObject,
-                duration: 0.1,
+                duration: 0.3,
                 opacity: 1,
                 width: drop_area.placementOffset.w,
                 height: drop_area.placementOffset.h,
@@ -713,7 +745,7 @@ var app = {
 
       },
       returnToContainer: function(icon, scaled) {
-        console.log(icon);
+        //console.log(icon);
         if (icon.getWidth() !== icon.displayWidth) {
           //icon.setWidth(iconWidth * scaled);
           icon.setWidth(icon.displayWidth);
@@ -769,7 +801,7 @@ var app = {
 
       checkForEmptyDropArea: function(drop_area) {
         if (drop_area.chromos.length === 0) {
-          drop_area.fill(drop_areaFillColor);
+        //  drop_area.fill(drop_areaFillColor);
           if (drop_area.next) {
             drop_area.next.opacity(unfocusedDropAreaOpacity);
           }
@@ -873,7 +905,7 @@ var app = {
         if (!imageSources.sequences[seqStr]) return false;
 
         if(typeof imageSources.sequences[seqStr].next_circle_bg_color === 'undefined') {
-            imageSources.sequences[seqStr].next_circle_bg_color = drop_areaFillColor;
+            //imageSources.sequences[seqStr].next_circle_bg_color = drop_areaFillColor;
             if(DEBUG) {
                 console.log("SET color: "+imageSources.sequences[seqStr].next_circle_bg_color);
             }
@@ -1042,14 +1074,22 @@ var app = {
           });
         }
 
-        if (focusedDropArea.group.startingPosition && sequence == 1) {
+        if (sequence == 1) {
           app.ui.focus(focusedDropArea);
         }
       },
       focusing: false,
       focus: function(thisDropArea, params) {
-        if (!thisDropArea.group.startingPosition) return false;
+        if (!thisDropArea.group.startingPosition) {
+          console.log("Warning: No starting position");
+          console.log(thisDropArea.group);
+          return false;
+        }
+
         if (app.ui.focusing) return false;
+        //thisDropArea.bg_image.src = thisDropArea.img_url;
+        //thisDropArea.fillPatternImage = thisDropArea.bg_image;
+      //  thisDropArea.moveToTop();
 
         if (!params) {
           params = {
@@ -1067,13 +1107,14 @@ var app = {
         x = params.focusOut ? thisDropArea.group.startingPosition.x : thisDropArea.focusPosition.x;
         y = params.focusOut ? thisDropArea.group.startingPosition.y : thisDropArea.focusPosition.y;
 
-        console.log("FOCUS POS: x: "+x+" y: "+y);
+        //console.log("FOCUS POS: x: "+x+" y: "+y);
 
         if (params.focusOut) {
           thisDropArea.group.moveTo(app.layer);
         } else {
           thisDropArea.group.moveTo(app.focusLayer);
         }
+
 
         //if(app.currentDragObject)
         //console.log("Current parent before focus tween "+app.currentDragObject.parent.attrs.name);
@@ -1096,7 +1137,7 @@ var app = {
         app.drop_areaTween = new Konva.Tween({
           node: thisDropArea,
           duration: 0.1,
-          fill: drop_areaFillColor,
+        //  fill: drop_areaFillColor,
           opacity: params.focusOut ? unfocusedDropAreaOpacity : 1,
           onFinish: function() {
             if (app.safeLabel) {
@@ -1164,6 +1205,13 @@ var app = {
               params.onComplete();
             }
 
+          /*  if(params.focusOut) {
+              thisDropArea.image.show();
+            } else {
+              thisDropArea.image.hide();
+
+            }*/
+
             app.ui.focusing = true;
           }
         });
@@ -1175,7 +1223,7 @@ var app = {
         }, 50);
 
         focusedDropArea = thisDropArea;
-
+        thisDropArea.cache();
         return this;
       },
 
@@ -1188,6 +1236,8 @@ var app = {
           }
           return false;
         };
+
+        Image.prototype.drop_area = null;
 
         Konva.Rect.prototype.group = null;
         Konva.Rect.prototype.uiContainer = function(params) {
@@ -1232,6 +1282,7 @@ var app = {
 
         Konva.Image.prototype.sizeMultiplier = 1;
         Konva.Image.prototype.hSpacing = 40;
+
         // button functions
         Konva.Rect.prototype.setUIComponentType = function(type) {
           this.uiComponentType = type;
@@ -1245,11 +1296,13 @@ var app = {
         Konva.Image.prototype.answerId = null;
 
         Konva.Shape.prototype.canswerId = null;
-        Konva.Shape.prototype.focusPosition = null;
+        Konva.Shape.prototype.focusPosition = {x: 0, y:0};
         Konva.Shape.prototype.droppable = true;
         Konva.Shape.prototype.focusMultiplier = 2.65;
-        Konva.Shape.prototype.placementOffset = { x: 0, y: 0, w: 40, h: 40};
+        Konva.Shape.prototype.placementOffset = { x: -15, y: -15, w: 120, h: 120};
         Konva.Shape.prototype.focusLabelPosition = { x: -80, y: 67};
+        Konva.Shape.prototype.bg_image = null;
+        Konva.Shape.prototype.img_url = null;
         // drop_area settings
         Konva.Shape.prototype.initDropArea = function(params) {
           this.chromos = params.chromos;
@@ -1279,10 +1332,10 @@ var app = {
 
           if (!this.droppable) {
             app.staticLayer.add(this.group);
-          } else {
+          } else if (!this.background) {
             app.layer.add(this.group);
           }
-          this.group.add(drop_area);
+            this.group.add(drop_area);
 
           $(this).on("beforeDropAreaTween", function(e, o) {
             $(app.stage).trigger('touchDropArea', {
@@ -1294,7 +1347,6 @@ var app = {
           return this.group;
         };
 
-      //  Konva.Shape.prototype.droppable = false;
         Konva.Shape.prototype.scrollPageOnDrop = null;
         Konva.Shape.prototype.group = null;
         Konva.Shape.prototype.label = null;
@@ -1303,7 +1355,15 @@ var app = {
       }
     };
 
+    Konva.Shape.prototype.liveLoadDropArea = function(params) {
+        this.initDropArea(params);
+
+        this.group.draw();
+        this.group.moveToTop();
+    };
+
     app.ui.setPrototypes();
+    //images = [];
 
     app.sequences.forEach(function(el, key) {
       if (el !== null) {
@@ -1335,7 +1395,7 @@ var app = {
     app.staticLayer.add(iconMenu.group);
     iconMenu.setListening(false);
 
-    var setPrecursor = function(pX, pY, i) {
+    var setPrecursor = function(pX, pY, i, drop_area) {
       precursorImg.onload = function() {
 
         precursor = new Konva.Image({
@@ -1349,6 +1409,7 @@ var app = {
         });
 
         precursor.setUIComponentType('stillImage');
+        precursor.drop_area = drop_area;
         app.staticLayer.add(precursor);
       };
     };
@@ -1361,107 +1422,117 @@ var app = {
     var previousDropArea;
 
     let newCircleDropArea = function(params) {
-      return new Konva.Circle({
+      let drop_area = new Konva.Circle({
         radius: circleDiameter / 2,
         stroke: drop_areaStrokeColor,
         name: 'drop_area_' + params.i,
         id: 'drop_area_' + params.i,
         opacity: opacity,
-        fill: drop_areaFillColor,
+        //fill: drop_areaFillColor,
       });
 
+
+        return drop_area;
     };
 
+    function loadBackgroundImages(callback) {
+        let loadedImages = 0;
+        let images = [];
+        for(let i = 1; i < app.sequences.length; i++) {
+          if(imageSources.sequences[app.sequences[i]]) {
+              images[i] = new Image();
+
+              images[i].onload = function() {
+
+
+                console.log("LI: "+i+ " len: " + app.sequences.length-1);
+                if(i === app.sequences.length-1) {
+                //  console.log("before call SDFjladsfofjdoas;");
+              //    console.log(images[i]);
+                  callback(images);
+                }
+
+              };
+
+              images[i].src = imageSources.sequences[app.sequences[i]].background;
+        }
+      }
+    }
+
+    loadBackgroundImages(function(images) {
     let drop_area;
+
     let focusPos = {};
     for (let i = 0; i < app.sequences.length; i++) {
       opacity = i > 1 ? unfocusedDropAreaOpacity : 1.0;
 
       let x;
       let y;
-      console.log("sequences: "+i);
-
 
       if (i === 0) {
         x = 109;
-        y = 93;
+        y = 195;
 
         var pX = x; // create local instance
         var pY = y;
 
-        setPrecursor(pX, pY, i);
         drop_area = newCircleDropArea({x: x, y: y, i:i});
+        setPrecursor(pX, pY, i, drop_area);
       } else if(i < 4) {
-        x = problemPosFormula - 125;
+        x = problemPosFormula - 100;
         y = circleDiameter + yoff + topOffset;
         yoff += drop_areaSpace;
-            drop_area = new Konva.Image({
-                name: 'drop_area_' + i,
-                id: 'drop_area_' + i,
-                opacity: opacity,
-                fill: drop_areaFillColor,
-                width: 100,
-                height: 100,
-            });
+
+        drop_area = new Konva.Image({
+            name: 'drop_area_' + i,
+            id: 'drop_area_' + i,
+            image: images[i],
+            width: 150,
+            height: 150
+        });
+
+        if(i > 0 && i < 4) {
+              drop_area.placementOffset = {x: 0, y:0, w: 150, h: 150};
+        }
+
+        drop_area.focusMultiplier = 2.2;
       } else if(i > 3 && i < 7) {
-        x = problemPosFormula - 250 ;
+        x = problemPosFormula - 180 ;
         y = circleDiameter + yoff + topOffset;
 
         yoff += drop_areaSpace + 30;
 
-        /*drop_area = new Konva.Rect({
-          width: 350,
-          height: 160,
-          stroke: drop_areaStrokeColor,
-          name: 'drop_area_' + i,
-          id: 'drop_area_' + i,
-          opacity: opacity,
-          fill: drop_areaFillColor,
-
-        });*/
-
         drop_area = new Konva.Image({
-          //stroke: drop_areaStrokeColor,
-          name: 'drop_area_' + i,
-          id: 'drop_area_' + i,
-          opacity: opacity,
-          fill: drop_areaFillColor,
-          width: 350,
-          height: 160,
+            name: 'drop_area_' + i,
+            id: 'drop_area_' + i,
+            image: images[i],
+            width: 307,
+            height: 159,
         });
 
-        drop_area.focusMultiplier = 1.1;
-        drop_area.placementOffset = {x: 0, y:0, w: 300, h: 150};
+        drop_area.focusMultiplier = 2;
+        drop_area.placementOffset = {x: 0, y:0, w: 307, h: 159};
         drop_area.focusLabelPosition.x = -140;
         drop_area.focusLabelPosition.y = 90;
+        //focusPos = { x: -150, y: 195 };
+        //drop_area.focusPosition.y = 195;
       } else {
-        x = problemPosFormula - 422;
+        x = problemPosFormula - 360;
         y = circleDiameter + yoff + topOffset;
         yoff += drop_areaSpace;
 
-      /*  drop_area = new Konva.Rect({
-          width: 700,
-          height: 160,
-          stroke: drop_areaStrokeColor,
-          name: 'drop_area_' + i,
-          id: 'drop_area_' + i,
-          opacity: opacity,
-          fill: drop_areaFillColor,
-        });*/
-
         drop_area = new Konva.Image({
-          //stroke: drop_areaStrokeColor,
-          name: 'drop_area_' + i,
-          id: 'drop_area_' + i,
-          opacity: opacity,
-          fill: drop_areaFillColor,
-          width: 700,
-          height: 160,
+            name: 'drop_area_' + i,
+            id: 'drop_area_' + i,
+            image: images[i],
+            width: 615,
+            height: 159,
         });
-          drop_area.focusMultiplier = 1.0;
-          drop_area.placementOffset = {x: 42, y:0, w: 615, h: 150};
-          drop_area.focusLabelPosition.x = 0;
-          drop_area.focusLabelPosition.y = -20;
+
+        drop_area.focusMultiplier = 1.0;
+        drop_area.placementOffset = {x: 42, y:0, w: 615, h: 150};
+        drop_area.focusLabelPosition.x = 0;
+        drop_area.focusLabelPosition.y = -20;
       }
 
       if(DEBUG) {
@@ -1489,6 +1560,11 @@ var app = {
         focusPosition: focusPos
       });
 
+      if (i === 1) {
+        console.log("setting FOCUSED AREA");
+        focusedDropArea = drop_area;
+      }
+
       app.ui.setDropAreaLabel(i, drop_area, 0, 0);
 
       if (previousDropArea && drop_area) {
@@ -1501,9 +1577,7 @@ var app = {
 
     //  drop_area.cache();
 
-      if (i === 1) {
-        focusedDropArea = drop_area;
-      }
+
 
       drop_area = null;
     }
@@ -1517,11 +1591,13 @@ var app = {
 
     app.layer.setListening(false);
 
-    // hide all drop_areas
     app.layer.children.forEach(
-      function(n) {
-        n.opacity(0);
+        function(n) {
+          n.opacity(0);
+        });
       });
+    // hide all drop_areas
+  /*  */
 
     app.currentDragObject = null;
     app.stage.on("dragstart", function(e) {
@@ -1565,6 +1641,7 @@ var app = {
         app.focusLayer.hide();
 
         app.recOpacity(app.layer, 1);
+
         app.layer.scaleX(0.55);
         app.layer.scaleY(0.55);
         app.layer.setY(0);
@@ -1579,6 +1656,7 @@ var app = {
       app.focusLayer.show();
 
       app.recOpacity(app.layer, 0);
+
       app.layer.scaleX(1);
       app.layer.scaleY(1);
 
@@ -1691,15 +1769,21 @@ var app = {
       }
 
       if (app.sizeChangeOnDrop && !app.currentDragObject.sizeChanged) {
-        app.currentDragObject.setScaleX(app.currentDragObject.scaleX() * e.target.focusMultiplier);
-        app.currentDragObject.setScaleY(app.currentDragObject.scaleY() * e.target.focusMultiplier);
-
+        //  app.currentDragObject.setScaleX(app.currentDragObject.scaleX() * e.target.focusMultiplier);
+        //  app.currentDragObject.setScaleY(app.currentDragObject.scaleY() * e.target.focusMultiplier);
+        app.currentDragObject.setWidth(e.target.placementOffset.w * e.target.focusMultiplier);
+        app.currentDragObject.setHeight(e.target.placementOffset.h * e.target.focusMultiplier);
+      //  width: drop_area.placementOffset.w,
+      //  height: drop_area.placementOffset.h,
+      //  x: drop_area.placementOffset.x,
+      //  y: drop_area.placementOffset.y,
         app.currentDragObject.sizeChanged = true;
 
       }
-
-      app.currentDragObject.setX(app.stage.getPointerPosition().x - ((app.currentDragObject.width() / 2) * e.target.focusMultiplier));
-      app.currentDragObject.setY(app.stage.getPointerPosition().y - ((app.currentDragObject.height() / 2) * e.target.focusMultiplier));
+      //app.currentDragObject.setX(e.target.placementOffset.x);
+      //app.currentDragObject.setY(e.target.placementOffset.y);
+      //app.currentDragObject.setX(app.stage.getPointerPosition().x - ((app.currentDragObject.width() / 2) * e.target.focusMultiplier));
+      //app.currentDragObject.setY(app.stage.getPointerPosition().y - ((app.currentDragObject.height() / 2) * e.target.focusMultiplier));
 
       if (e.target.name().indexOf('drop_area') !== -1) {
 
@@ -1728,7 +1812,7 @@ var app = {
     });
 
     app.stage.on("touchstart mouseover", function(e) {
-      //  console.log("fired mo ");
+      //console.log("fired mo ");
       if (e.target.opacity() < interactableThresholdOpacity) {
         return false;
       }
