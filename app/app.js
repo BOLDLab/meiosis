@@ -111,7 +111,7 @@ var app = {
       },
 
       {
-        x: 625,
+        x: 655,
         y: 35,
         text: 'Final Gamete'
       }
@@ -123,7 +123,7 @@ var app = {
         PROPHASE_I: {
           iconWidth: 150,
           focusPositionX: 280,
-          focusPositionY: 100,
+          focusPositionY: 55,
           icons: ['img/Prophase 1/PROPHASE 1 - A version-80.png',
             'img/Prophase 1/Prophase-1 -B version-80.png',
             'img/Prophase 1/Ptophase-1 -C- version-80.png'
@@ -140,7 +140,7 @@ var app = {
           },
           iconWidth: 150,
           focusPositionX: 280,
-          focusPositionY: 100,
+          focusPositionY: 55,
         //  next_circle_bg_color: '#eed',
           icons: ['img/Metaphase 1/Ai-Metaphase-1-80.png',
             'img/Metaphase 1/Aii-Metaphase-1-80.png',
@@ -170,7 +170,7 @@ var app = {
           },
           iconWidth: 150,
           focusPositionX: 280,
-          focusPositionY: 100,
+          focusPositionY: 55,
         //  next_circle_bg_color: '#fff',
           icons: ['img/Anaphase 1/Ai-Anaphase-1-80.png',
             'img/Anaphase 1/Aii-Anaphase-1-80.png',
@@ -373,11 +373,22 @@ var app = {
     });
 
     // recursive opacity
-    app.recOpacity = function(o, v, exempt) {
-      if (!exempt) exempt = null;
+    app.recOpacity = function(o, v, comparitor) {
+      if (!comparitor) comparitor = null;
+    /*  let _f = null;
+      if(typeof comparitor === "string") {
+          _f = function(n) {
+              return n.name().indexOf(comparitor) !== -1;
+          };
+      } else {
+          _f = function(n) {
+              return typeof n === comparitor;
+          };
+      }*/
+
       o.children.forEach(function(n) {
         n.opacity(v);
-        if (n.children && typeof n !== exempt) {
+        if (n.children /*&& _f(n)*/) {
           app.recOpacity(n, v);
         }
       });
@@ -450,8 +461,16 @@ var app = {
       },
 
       undo: function() {
+        if(DEBUG) {
+            console.log("UNDO HISTORY:");
+            console.log(undoHistory);
+        }
+        if(undoHistory.length === 0) {
+          return false;
+        }
 
-        var drop_area = undoHistory[undoHistory.length - 1];
+        var drop_area = undoHistory.pop();
+        console.log(drop_area);
 
         if(drop_area.sequence < 4) {
             precursor.show();
@@ -470,11 +489,13 @@ var app = {
 
           if (drop_area.chromos.length > 0) {
             var ret = drop_area.chromos.pop();
+            console.log("Popped most recent::");
+            console.log(ret);
             app.ui.returnToContainer(ret, iconHomeScale);
           }
 
           if (drop_area.chromos.length === 0) {
-            undoHistory.pop();
+            //undoHistory.pop();
 
             app.ui.resetMenuOptions(drop_area);
 
@@ -509,7 +530,6 @@ var app = {
             app.ui.focus(drop_area.next, {
               focusOut: true,
               onComplete: function() {
-
                 app.ui.focus(drop_area, {
                   focusOut: false,
                   reverseScroll: true
@@ -649,16 +669,19 @@ var app = {
               app.ui.toggleAllIconsDraggable(drop_area, true);
             }
 
-            drop_area.chromos.push(app.currentDragObject);
+
             app.currentDragObject.inDropArea = drop_area;
 
-            if (drop_area.droppable) undoHistory.push(drop_area);
+        //    undoHistory.push(drop_area);
 
             app.currentDragObject.setPlaced(true);
           }
         }
 
         if (drop_area) {
+          undoHistory.push(drop_area);
+          drop_area.chromos.push(app.currentDragObject);
+
           $(drop_area).trigger('beforeDropAreaTween', {
             callback: function() {
               app.focusLayer.hide();
@@ -691,7 +714,7 @@ var app = {
                 focusOut: true,
                 onComplete: function() {
                   app.focusLayer.show();
-
+                  drop_area.hide();
                   if (drop_area.next) {
 
                     app.ui.updateIcons(drop_area.next);
@@ -758,7 +781,7 @@ var app = {
 
         icon.moveTo(iconMenu.group);
         icon.moveToTop();
-
+        icon.show();
         //var index = Number(icon.name().split('_')[1]);
 
         icon.setX(icon.getHomePos().x);
@@ -919,10 +942,10 @@ var app = {
 
         if (app.ui.icon.konvaWrappers[seqStr].length === 0) {
 
-          var xchromPos = 45;
-          var ychromPos = 178;
+          var xchromPos = 25;
+          var ychromPos = 108;
          //iconVSpacing;
-          var hSpace = 80; //cctXPos - iconHSpacing * 0.075;
+          var hSpace = 5; //cctXPos - iconHSpacing * 0.075;
 
           app.ui.icon.images = app.ui.icon.images || {};
           app.ui.icon.images[seqStr] = app.ui.icon.images[seqStr] || [];
@@ -933,14 +956,13 @@ var app = {
           if(DEBUG) {
               console.log("Icon array length: "+imageSources.sequences[seqStr].icons.length);
           }
-          switch(imageSources.sequences[seqStr].iconWidth) {
-            case 300:
-              iconsPerRow = 2;
-            break;
-            case 580:
+          let iconWidth = imageSources.sequences[seqStr].iconWidth;
+
+          if (iconWidth >= 500) {
               iconsPerRow = 1;
-            break;
-            default:
+          } else if (iconWidth >= 300) {
+              iconsPerRow = 2;
+          } else {
               iconsPerRow = 4;
           }
 
@@ -1003,14 +1025,14 @@ var app = {
 
                 };
 
-                var vSpace = 170
+                var vSpace = 170;
                 xchromPos += imageSources.sequences[seqStr].iconWidth;
                 if(DEBUG) {
                   console.log("Index count: "+inx);
                 }
                 if(ac % iconsPerRow === 0) {
                   ychromPos += vSpace;
-                  xchromPos = 45;
+                  xchromPos = 25;
                 }
 
               }
@@ -1085,7 +1107,7 @@ var app = {
           console.log(thisDropArea.group);
           return false;
         }
-
+        thisDropArea.show();
         if (app.ui.focusing) return false;
         //thisDropArea.bg_image.src = thisDropArea.img_url;
         //thisDropArea.fillPatternImage = thisDropArea.bg_image;
@@ -1378,7 +1400,7 @@ var app = {
     // setup chromosome container
     var iconMenu = new Konva.Rect({
       x: cctXPos + 50,
-      y: cctYPos - 113,
+      y: cctYPos - 170,
       width: containerWidth,
       height: containerHeight,
       fill: containerFill,
@@ -1445,7 +1467,7 @@ var app = {
               images[i].onload = function() {
 
 
-                console.log("LI: "+i+ " len: " + app.sequences.length-1);
+              //  console.log("LI: "+i+ " len: " + app.sequences.length-1);
                 if(i === app.sequences.length-1) {
                 //  console.log("before call SDFjladsfofjdoas;");
               //    console.log(images[i]);
@@ -1479,7 +1501,7 @@ var app = {
         drop_area = newCircleDropArea({x: x, y: y, i:i});
         setPrecursor(pX, pY, i, drop_area);
       } else if(i < 4) {
-        x = problemPosFormula - 100;
+        x = problemPosFormula - 200;
         y = circleDiameter + yoff + topOffset;
         yoff += drop_areaSpace;
 
@@ -1497,7 +1519,7 @@ var app = {
 
         drop_area.focusMultiplier = 2.2;
       } else if(i > 3 && i < 7) {
-        x = problemPosFormula - 180 ;
+        x = problemPosFormula - 280 ;
         y = circleDiameter + yoff + topOffset;
 
         yoff += drop_areaSpace + 30;
@@ -1517,7 +1539,7 @@ var app = {
         //focusPos = { x: -150, y: 195 };
         //drop_area.focusPosition.y = 195;
       } else {
-        x = problemPosFormula - 360;
+        x = problemPosFormula - 460;
         y = circleDiameter + yoff + topOffset;
         yoff += drop_areaSpace;
 
@@ -1561,7 +1583,7 @@ var app = {
       });
 
       if (i === 1) {
-        console.log("setting FOCUSED AREA");
+        //console.log("setting FOCUSED AREA");
         focusedDropArea = drop_area;
       }
 
@@ -1640,10 +1662,10 @@ var app = {
         app.staticLayer.hide();
         app.focusLayer.hide();
 
-        app.recOpacity(app.layer, 1);
+        app.recOpacity(app.layer, 1, "drop_area");
 
-        app.layer.scaleX(0.55);
-        app.layer.scaleY(0.55);
+        app.layer.scaleX(0.7);
+        app.layer.scaleY(0.7);
         app.layer.setY(0);
         app.layer.setX(20);
         app.layer.show();
@@ -1655,7 +1677,7 @@ var app = {
       app.staticLayer.show();
       app.focusLayer.show();
 
-      app.recOpacity(app.layer, 0);
+      app.recOpacity(app.layer, 0, "drop_area");
 
       app.layer.scaleX(1);
       app.layer.scaleY(1);
@@ -1875,10 +1897,11 @@ var app = {
         var str = args.drop_area.label.text();
         var type = $(e.target).prop('id');
         args.drop_area.label.text(str + "\n(" + type + ")");
-        args.callback();
+
 
         $("#undo, #reset, #pdf").removeClass("disabled").prop("disabled", false);
         $("#labelme").hide().find('input').prop('checked', false).off('change');
+          args.callback();
       });
     });
 
@@ -1915,7 +1938,7 @@ $(document).on('docReady', "#container", function() {
   var canv = app.layer.getCanvas();
   var imgData1 = canv.toDataURL('image/png');
 
-  app.layer.x(0);
+/*  app.layer.x(0);
   app.layer.y(-330);
   app.layer.scaleX(0.8);
   app.layer.scaleY(0.7);
@@ -1924,13 +1947,13 @@ $(document).on('docReady', "#container", function() {
   //app.layer.scaleX(1.2);
 //  app.layer.scaleY(1.2);
 //  app.layer.draw();
-  var imgData2 = canv.toDataURL('image/png');
+  var imgData2 = canv.toDataURL('image/png');*/
 
   var pdf = new jsPDF('p', 'px', 'a4', false);
 
   pdf.addImage(imgData1, 'PNG', 0, 0, 645, 600);
-  pdf.addPage('a4', 'landscape');
-  pdf.addImage(imgData2, 'PNG', 0, 0, 645, 600);
+  //pdf.addPage('a4', 'landscape');
+//  pdf.addImage(imgData2, 'PNG', 0, 0, 645, 600);
   pdf.save('meiosis.pdf');
   app.layer.hide();
   bootbox.alert("Thank you. The PDF is in your downloads folder. Click OK to complete another exercise.", function() {

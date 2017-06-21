@@ -135,15 +135,15 @@ h2 {
   /*border: thin solid black;*/
 }
 .precursor {
-  width: 145px;
-  height: 130px;
-  left: 10px;
-  top: 16px;
+    width: 160px;
+    height: 150px;
+    left: 45px;
+    top: 175px;
 }
 .cell-box {
-    width: 600px;
-    height: 240px;
-    left: 33px;
+    width: 640px;
+    height: 540px;
+    left: 3px;
     top: 428px;
 }
 .drop-area {

@@ -51,6 +51,14 @@ module.exports = {
         }
       }
     },
+    babel: {
+      env: {
+        "ignore": [
+          "assets/**/*.js",
+          "node_modules/**/*.js"
+        ]
+      }
+    }
   },
   javascript: {
     validate: true,
@@ -61,4 +69,5 @@ module.exports = {
     base: '/',
     stripSlashes: true
   }
+
 };
