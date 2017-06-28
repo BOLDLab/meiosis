@@ -171,10 +171,11 @@ h2 {
   top: -39px;
 }
 .hd_example {
-  display: inline;
-  float: left;
-  background-image: url(../img/hapdip.png);
+  display: block;
+  /*float: left;*/
+  background-image: url(/img/hapdip.png);
   width: 200px;
+  height: 140px;
   background-repeat: no-repeat;
   background-size: contain;
 }

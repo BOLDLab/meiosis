@@ -89,27 +89,16 @@ var app = {
         y: 35,
         text: 'Prophase II'
       },
-      /*{
-        x: drop_areaSpace + rightLabelOffset,
-        y: 0,
-        text: 'Prophase II\n Centriole 2'
-      },*/
       {
         x: 325,//rightLabelOffset,
         y: 35,
         text: 'Metaphase II'
       },
-    /*  {
-        x: drop_areaSpace + rightLabelOffset,
-        y: 0,
-        text: 'Metaphase II\n Centriole 2'
-      },*/
       {
         x: 325,//rightLabelOffset,
         y: 35,
         text: 'Anaphase II'
       },
-
       {
         x: 655,
         y: 35,
@@ -214,40 +203,6 @@ var app = {
           background: 'img/Hints/Prophase 11 greyscale.png',
           answerIds: ['c1','c2','x1','x2','x3','x4','x5','x6','x7']
         },
-      /*  PROPHASE_II_B: {
-          links: {
-            c1: ['c1', 'c2', 'x1','x2'],
-            c2: ['c3', 'c4', 'x3','x4'],
-            x1: ['x1', 'x2', 'x5', 'x6'],
-            x2: ['x1', 'x2', 'x3', 'x4'],
-            x3: ['x5', 'x6', 'x12', 'x13'],
-            x4: ['x5', 'x6', 'x7', 'x8','x9'],
-            x5: ['x5', 'x6', 'x7', 'x8','x9'],
-            x6: ['x10', 'x11', 'x12','x13','x14'],
-            x7: ['x10', 'x11', 'x12','x13','x14'],
-          },
-          icons: ['img/Prophase 11/Ai Prophase 11 - 1-80.png',
-            'img/Prophase 11/Ai Prophase 11 - 2-80.png',
-            'img/Prophase 11/Aii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Aii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Aiii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Aiii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Bi Prophase 11 - 1-80.png',
-            'img/Prophase 11/Bi Prophase 11 - 2-80.png',
-            'img/Prophase 11/Bii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Bii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Biii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Biii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Ci Prophase 11 - 1-80.png',
-            'img/Prophase 11/Ci Prophase 11 - 2-80.png',
-            'img/Prophase 11/Cii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Cii Prophase 11 - 2-80.png',
-            'img/Prophase 11/Ciii Prophase 11 - 1-80.png',
-            'img/Prophase 11/Ciii Prophase 11 - 2-80.png',
-          ],
-          answerIds: ['c1','c2','c3','c4', 'x1', 'x2', 'x3', 'x4', 'x5',
-          'x6','x7','x8','x9','x10','x11','x12','x13','x14']
-        },*/
         METAPHASE_II: {
           links: {
             c1: ['c1', 'c2', 'x1'],
@@ -919,9 +874,12 @@ var app = {
         }
         if (typeof drop_area === 'number') {
           sequence = drop_area;
+        //  console.log("SEQ WAS NO.");
         } else {
           sequence = drop_area.sequence;
+          //console.log("SEQ WAS OBJ.");
         }
+      //  console.log(sequence);
         var seqStr = app.sequences[sequence];
         loadCount[seqStr] = 0;
 
@@ -969,7 +927,7 @@ var app = {
           var ac = 0;
           imageSources.sequences[seqStr].icons.forEach(
             function(src, inx) {
-
+              console.log("STRING IS: "+seqStr);
               var answerId = imageSources.sequences[seqStr].answerIds[inx];
               try {
               if (!drop_areaAnswer || imageSources.sequences[seqStr].links[drop_areaAnswer].indexOf(answerId) !== -1) {
@@ -1486,6 +1444,12 @@ var app = {
 
     let focusPos = {};
     for (let i = 0; i < app.sequences.length; i++) {
+
+    if(DEBUG) {
+      console.log("Processing sequence: ");
+      console.log(app.sequences[i]);
+    }
+
       opacity = i > 1 ? unfocusedDropAreaOpacity : 1.0;
 
       let x;
@@ -1563,7 +1527,7 @@ var app = {
       }
 
       drop_area.droppable = i > 0;
-      drop_area.sequence = i == 4 || i == 5 ? 5 : i;
+      drop_area.sequence = i;
       drop_area.scrollPageOnDrop = 'down';
 
       if(drop_area.droppable && imageSources.sequences[app.sequences[i]]) {
